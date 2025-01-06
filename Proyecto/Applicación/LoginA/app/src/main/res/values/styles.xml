@@ -1,0 +1,15 @@
+<resources>
+    <!-- Tema principal con ActionBar -->
+    <style name="Theme.LoginA" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/blue_primary</item>
+        <item name="colorPrimaryVariant">@color/blue_primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item> <!-- Asegúrate de que el texto sea blanco -->
+    </style>
+
+    <!-- Tema sin ActionBar -->
+    <style name="Theme.LoginA.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/blue_primary</item>
+        <item name="colorPrimaryVariant">@color/blue_primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+</resources>

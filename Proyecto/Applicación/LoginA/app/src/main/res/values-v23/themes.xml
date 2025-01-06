@@ -1,0 +1,25 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme -->
+    <style name="Base.Theme.LoginA" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Colores comunes para ambos temas -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+
+    <!-- Tema Claro -->
+    <style name="Theme.LoginA.Light" parent="Base.Theme.LoginA">
+        <!-- Configuración específica para el tema claro -->
+        <item name="android:navigationBarColor">@android:color/white</item>
+        <item name="android:statusBarColor">@color/purple_500</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <!-- Tema Oscuro -->
+    <style name="Theme.LoginA.Dark" parent="Base.Theme.LoginA">
+        <!-- Configuración específica para el tema oscuro -->
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="android:statusBarColor">@color/purple_700</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>
