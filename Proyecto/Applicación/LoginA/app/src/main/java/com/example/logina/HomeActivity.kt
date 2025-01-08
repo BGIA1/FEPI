@@ -1,7 +1,9 @@
 package com.example.logina
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -20,9 +22,8 @@ class HomeActivity : AppCompatActivity() {
 
         // Configura la Toolbar
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
-        //setSupportActionBar(toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar?.title = ""
-
 
         // Configura el DrawerLayout y NavigationView
         drawerLayout = findViewById(R.id.drawerLayout)
@@ -43,16 +44,23 @@ class HomeActivity : AppCompatActivity() {
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_profile -> {
-                    Toast.makeText(this, "Perfil seleccionado", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, ProfileActivity::class.java)
+                    startActivity(intent)
                 }
                 R.id.nav_personal_info -> {
-                    Toast.makeText(this, "Información Personal seleccionada", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, PersonalInfoActivity::class.java)
+                    startActivity(intent)
                 }
                 R.id.nav_call -> {
-                    Toast.makeText(this, "Convocatoria seleccionada", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, CallActivity::class.java)
+                    startActivity(intent)
                 }
                 R.id.nav_skills -> {
-                    Toast.makeText(this, "Aptitudes seleccionadas", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, SkillsActivity::class.java)
+                    startActivity(intent)
+                }
+                else -> {
+                    Toast.makeText(this, "Opción no reconocida", Toast.LENGTH_SHORT).show()
                 }
             }
             drawerLayout.closeDrawers()
@@ -63,6 +71,26 @@ class HomeActivity : AppCompatActivity() {
         val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
             Toast.makeText(this, "Bienvenido", Toast.LENGTH_SHORT).show()
+        }
+
+        // Configura el botón "Convocatoria Abierta"
+        val convocatoriaAbiertaButton = findViewById<Button>(R.id.convocatoriaAbiertaButton)
+
+        // Recuperar datos de SharedPreferences
+        val sharedPreferences = getSharedPreferences("ConvocatoriaPrefs", MODE_PRIVATE)
+        val convocatoriaActiva = sharedPreferences.getString("convocatoriaActiva", null)
+
+        if (convocatoriaActiva != null) {
+            // Mostrar el botón si existe una convocatoria activa
+            convocatoriaAbiertaButton.visibility = Button.VISIBLE
+            convocatoriaAbiertaButton.setOnClickListener {
+                val intent = Intent(this, RegistroConvocatoriaActivity::class.java)
+                intent.putExtra("convocatoriaNombre", convocatoriaActiva)
+                startActivity(intent)
+            }
+        } else {
+            // Ocultar el botón si no hay convocatoria activa
+            convocatoriaAbiertaButton.visibility = Button.GONE
         }
     }
 

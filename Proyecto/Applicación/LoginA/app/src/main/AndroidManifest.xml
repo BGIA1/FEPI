@@ -41,6 +41,32 @@
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
 
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".PersonalInfoActivity" />
+        <activity android:name=".CallActivity" />
+        <activity android:name=".SkillsActivity" />
+
+        <activity
+            android:name=".DelegadoActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+
+        <activity
+            android:name=".ConvocatoriaActivity"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity android:name=".RecursosActivity" />
+        <activity android:name=".CentrosEducativosActivity" />
+        <activity android:name=".DelegacionesActivity" />
+        <activity
+            android:name=".PerfilActivity"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity android:name=".RegistroConvocatoriaActivity"
+            android:theme="@style/Theme.LoginA.NoActionBar"/>
+
+
+
+
+
 
     </application>
 

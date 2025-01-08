@@ -8,6 +8,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class LoginActivity : AppCompatActivity() {
+
+    // Usuarios predeterminados
+    private val defaultUsers = mapOf(
+        "usuario@gmail.com" to "123456",
+        "bot@becario.com" to "123456",
+        "bot@coordinadorzona.com" to "123456",
+        "bot@delegadoestatal.com" to "123456",
+        "bot@supervisormodulo.com" to "123456"
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -25,13 +35,31 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Comprobar los datos con UserData
-            if (email == UserData.email && password == UserData.password) {
-                Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, HomeActivity::class.java)
-                startActivity(intent)
-            } else {
-                Toast.makeText(this, "Correo o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+            // Verificar credenciales
+            when {
+                email == "bot@delegadoestatal.com" && password == "123456" -> {
+                    // Redirigir a DelegadoActivity si es Delegado Estatal
+                    Toast.makeText(this, "Inicio de sesión como Delegado Estatal", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, DelegadoActivity::class.java)
+                    startActivity(intent)
+                }
+                defaultUsers[email] == password -> {
+                    // Redirigir a HomeActivity para otros usuarios
+                    Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, HomeActivity::class.java)
+
+                    // Si es un rebuild, envía el parámetro para limpiar SharedPreferences
+                    if (intent.getBooleanExtra("clearPrefs", false)) {
+                        intent.putExtra("clearPrefs", true)
+                    }
+
+                    intent.putExtra("userEmail", email) // Pasar el correo del usuario
+                    startActivity(intent)
+                }
+                else -> {
+                    // Mostrar error si las credenciales no coinciden
+                    Toast.makeText(this, "Correo o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

@@ -7,8 +7,11 @@
         android:title="Información Personal" />
     <item
         android:id="@+id/nav_call"
-        android:title="Convocatoria" />
+        android:title="Llamadas" />
     <item
         android:id="@+id/nav_skills"
-        android:title="Aptitudes" />
+        android:title="Habilidades" />
+    <item
+        android:id="@+id/nav_convocatoria"
+        android:title="Convocatoria" />
 </menu>
