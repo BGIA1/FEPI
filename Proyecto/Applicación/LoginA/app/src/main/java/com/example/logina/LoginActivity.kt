@@ -14,8 +14,7 @@ class LoginActivity : AppCompatActivity() {
         "usuario@gmail.com" to "123456",
         "bot@becario.com" to "123456",
         "bot@coordinadorzona.com" to "123456",
-        "bot@delegadoestatal.com" to "123456",
-        "bot@supervisormodulo.com" to "123456"
+        "bot@delegadoestatal.com" to "123456"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,26 +37,33 @@ class LoginActivity : AppCompatActivity() {
             // Verificar credenciales
             when {
                 email == "bot@delegadoestatal.com" && password == "123456" -> {
-                    // Redirigir a DelegadoActivity si es Delegado Estatal
                     Toast.makeText(this, "Inicio de sesión como Delegado Estatal", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this, DelegadoActivity::class.java)
                     startActivity(intent)
                 }
+                email == "bot@coordinadorzona.com" && password == "123456" -> {
+                    Toast.makeText(this, "Inicio de sesión como Coordinador de Zona", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, CoordinadorActivity::class.java)
+                    startActivity(intent)
+                }
+                email == "bot@supervisormodulo.com" && password == "123456" -> {
+                    // Redirigir a SupervisorActivity si es Supervisor de Módulo
+                    Toast.makeText(this, "Inicio de sesión como Supervisor de Módulo", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, SupervisorActivity::class.java)
+                    startActivity(intent)
+                }
+                email == "bot@becario.com" && password == "123456" -> {
+                    // Redirigir a BecarioMenuActivity si es Becario
+                    Toast.makeText(this, "Inicio de sesión como Becario", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, PantallaInicioBecario::class.java)
+                    startActivity(intent)
+                }
                 defaultUsers[email] == password -> {
-                    // Redirigir a HomeActivity para otros usuarios
                     Toast.makeText(this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this, HomeActivity::class.java)
-
-                    // Si es un rebuild, envía el parámetro para limpiar SharedPreferences
-                    if (intent.getBooleanExtra("clearPrefs", false)) {
-                        intent.putExtra("clearPrefs", true)
-                    }
-
-                    intent.putExtra("userEmail", email) // Pasar el correo del usuario
                     startActivity(intent)
                 }
                 else -> {
-                    // Mostrar error si las credenciales no coinciden
                     Toast.makeText(this, "Correo o contraseña incorrectos", Toast.LENGTH_SHORT).show()
                 }
             }

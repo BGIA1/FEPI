@@ -19,11 +19,12 @@
             android:background="@color/blue_primary"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-        <!-- Aquí puedes agregar contenido principal -->
+        <!-- Contenedor para el contenido principal -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="16dp" />
+            android:padding="16dp">
+        </FrameLayout>
     </LinearLayout>
 
     <!-- NavigationView -->
@@ -32,6 +33,6 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:menu="@menu/menu_delegado"
-        android:fitsSystemWindows="true" />
+        android:fitsSystemWindows="true"
+        app:menu="@menu/menu_coordinador" />
 </androidx.drawerlayout.widget.DrawerLayout>

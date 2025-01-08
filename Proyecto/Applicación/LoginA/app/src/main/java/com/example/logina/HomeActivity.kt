@@ -80,8 +80,8 @@ class HomeActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("ConvocatoriaPrefs", MODE_PRIVATE)
         val convocatoriaActiva = sharedPreferences.getString("convocatoriaActiva", null)
 
-        if (convocatoriaActiva != null) {
-            // Mostrar el botón si existe una convocatoria activa
+        // Mostrar el botón solo si la convocatoria activa es "CONAFE 2025"
+        if (convocatoriaActiva == "CONAFE 2025") {
             convocatoriaAbiertaButton.visibility = Button.VISIBLE
             convocatoriaAbiertaButton.setOnClickListener {
                 val intent = Intent(this, RegistroConvocatoriaActivity::class.java)
@@ -89,7 +89,6 @@ class HomeActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         } else {
-            // Ocultar el botón si no hay convocatoria activa
             convocatoriaAbiertaButton.visibility = Button.GONE
         }
     }

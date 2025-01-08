@@ -8,6 +8,13 @@
     <string name="previous">Previous</string>
     <string name="open_drawer">Abrir menú</string>
     <string name="close_drawer">Cerrar menú</string>
+    <string-array name="rejection_reasons">
+            <item>Falta de documentos</item>
+            <item>Documentos no visibles</item>
+            <item>Otro</item>
+    </string-array>
+
+
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

@@ -6,4 +6,5 @@
     <color name="purple_700">#3700B3</color>
     <color name="blue_primary">#007BFF</color> <!-- Azul principal -->
     <color name="blue_primary_dark">#0056B3</color> <!-- Azul oscuro para variantes -->
+    <color name="blue_secondary">#03DAC5</color>
 </resources>

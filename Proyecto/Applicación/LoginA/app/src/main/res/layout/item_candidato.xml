@@ -1,0 +1,74 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Nombre del Candidato -->
+    <TextView
+        android:id="@+id/candidatoNombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nombre del Candidato"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- Email del Candidato -->
+    <TextView
+        android:id="@+id/candidatoEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email" />
+
+    <!-- Teléfono del Candidato -->
+    <TextView
+        android:id="@+id/candidatoTelefono"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Teléfono" />
+
+    <!-- Botón para Visualizar Documentos -->
+    <Button
+        android:id="@+id/viewDocumentsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ver Documentos"
+        android:layout_marginTop="8dp" />
+
+    <!-- Contenedor Horizontal para los Botones -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:weightSum="2">
+
+        <!-- Botón Aceptar -->
+        <Button
+            android:id="@+id/acceptButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Aceptar" />
+
+        <!-- Botón Rechazar -->
+        <Button
+            android:id="@+id/rejectButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Rechazar" />
+    </LinearLayout>
+
+    <!-- Menú Desplegable para Motivos de Rechazo -->
+    <Spinner
+        android:id="@+id/rejectionReasonSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:entries="@array/rejection_reasons"
+        android:layout_marginTop="8dp" />
+</LinearLayout>

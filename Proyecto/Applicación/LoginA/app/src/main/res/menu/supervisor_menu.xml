@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_capacitacion"
+        android:title="Capacitación"/>
+    <item
+        android:id="@+id/nav_supervision"
+        android:title="Supervisión"/>
+    <item
+        android:id="@+id/nav_reportes"
+        android:title="Reportes"/>
+</menu>

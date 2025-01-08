@@ -62,6 +62,49 @@
             android:theme="@style/Theme.LoginA.NoActionBar" />
         <activity android:name=".RegistroConvocatoriaActivity"
             android:theme="@style/Theme.LoginA.NoActionBar"/>
+        <activity
+            android:name=".CoordinadorActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity
+            android:name=".CandidatosActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+
+        <activity
+            android:name=".SupervisorActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity
+            android:name=".SupervisionActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity
+            android:name=".ReportesActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity
+            android:name=".CapacitacionActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity
+            android:name=".PantallaInicioBecario"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity
+            android:name=".BecarioStatusActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity
+            android:name=".PostularseActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity
+            android:name=".EditarPerfilActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+
+
 
 
 

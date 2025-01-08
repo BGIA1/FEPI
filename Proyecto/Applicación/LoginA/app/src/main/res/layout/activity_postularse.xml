@@ -1,0 +1,26 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Spinner
+        android:id="@+id/becaSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/postularButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Postularse"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/statusTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Estado de la postulación aparecerá aquí"
+        android:layout_marginTop="16dp" />
+</LinearLayout>

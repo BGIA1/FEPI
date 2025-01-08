@@ -1,5 +1,7 @@
 package com.example.logina
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -8,6 +10,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class RegistroConvocatoriaActivity : AppCompatActivity() {
+
+    private val PICK_PDF_REQUEST = 1
+    private var selectedPdfUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,9 +29,9 @@ class RegistroConvocatoriaActivity : AppCompatActivity() {
         val convocatoriaNombre = intent.getStringExtra("convocatoriaNombre")
         convocatoriaNombreTextView.text = "Convocatoria Activa: $convocatoriaNombre"
 
-        // Subir Documentación (simulado)
+        // Subir Documentación
         subirDocumentacionButton.setOnClickListener {
-            Toast.makeText(this, "Función para subir documentación en desarrollo", Toast.LENGTH_SHORT).show()
+            openFilePicker()
         }
 
         // Enviar Registro
@@ -40,9 +45,33 @@ class RegistroConvocatoriaActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            if (selectedPdfUri == null) {
+                Toast.makeText(this, "Por favor, sube un documento en formato PDF", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             // Simulamos el registro (puedes guardarlo en una base de datos aquí)
             Toast.makeText(this, "Registro enviado exitosamente", Toast.LENGTH_SHORT).show()
             finish() // Cierra la actividad
+        }
+    }
+
+    private fun openFilePicker() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "application/pdf"
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        startActivityForResult(Intent.createChooser(intent, "Selecciona un archivo PDF"), PICK_PDF_REQUEST)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_PDF_REQUEST && resultCode == RESULT_OK && data != null) {
+            selectedPdfUri = data.data
+            if (selectedPdfUri != null) {
+                Toast.makeText(this, "Archivo seleccionado: ${selectedPdfUri!!.lastPathSegment}", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "No se seleccionó ningún archivo", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
