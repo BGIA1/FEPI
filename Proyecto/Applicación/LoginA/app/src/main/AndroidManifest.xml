@@ -37,70 +37,89 @@
             android:theme="@style/Theme.LoginA" />
 
         <activity
-            android:name=".HomeActivity"
+            android:name=".Usuario.HomeActivity"
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
 
-        <activity android:name=".ProfileActivity" />
-        <activity android:name=".PersonalInfoActivity" />
-        <activity android:name=".CallActivity" />
-        <activity android:name=".SkillsActivity" />
+        <activity android:name=".Usuario.ProfileActivity" />
+        <activity android:name=".Usuario.PersonalInfoActivity" />
+        <activity android:name=".Usuario.CallActivity" />
+        <activity android:name=".Usuario.SkillsActivity" />
 
         <activity
-            android:name=".DelegadoActivity"
+            android:name=".DelegadoEstatal.DelegadoActivity"
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
 
         <activity
-            android:name=".ConvocatoriaActivity"
+            android:name=".DelegadoEstatal.ConvocatoriaActivity"
             android:theme="@style/Theme.LoginA.NoActionBar" />
-        <activity android:name=".RecursosActivity" />
-        <activity android:name=".CentrosEducativosActivity" />
-        <activity android:name=".DelegacionesActivity" />
+        <activity android:name=".DelegadoEstatal.RecursosActivity" />
+        <activity android:name=".DelegadoEstatal.CentrosEducativosActivity" />
+        <activity android:name=".DelegadoEstatal.DelegacionesActivity" />
         <activity
-            android:name=".PerfilActivity"
+            android:name=".Global.PerfilActivity"
             android:theme="@style/Theme.LoginA.NoActionBar" />
         <activity android:name=".RegistroConvocatoriaActivity"
             android:theme="@style/Theme.LoginA.NoActionBar"/>
         <activity
-            android:name=".CoordinadorActivity"
+            android:name=".CordinadorZona.CoordinadorActivity"
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
         <activity
-            android:name=".CandidatosActivity"
+            android:name=".CordinadorZona.CandidatosActivity"
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
 
         <activity
-            android:name=".SupervisorActivity"
+            android:name=".SupervisorModulo.SupervisorActivity"
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
         <activity
-            android:name=".SupervisionActivity"
+            android:name=".SupervisorModulo.SupervisionActivity"
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
         <activity
-            android:name=".ReportesActivity"
+            android:name=".SupervisorModulo.ReportesActivity"
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
         <activity
-            android:name=".CapacitacionActivity"
+            android:name=".SupervisorModulo.CapacitacionActivity"
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
         <activity
-            android:name=".PantallaInicioBecario"
+            android:name=".Aspirantes.PantallaInicioBecario"
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
         <activity
-            android:name=".BecarioStatusActivity"
+            android:name=".Aspirantes.BecarioStatusActivity"
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
         <activity
-            android:name=".PostularseActivity"
+            android:name=".Aspirantes.PostularseActivity"
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
         <activity
-            android:name=".EditarPerfilActivity"
+            android:name=".Global.EditarPerfilActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+
+
+
+        <activity
+            android:name=".AdministradorSistema.DeleteUserActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity
+            android:name=".AdministradorSistema.AdminActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity
+            android:name=".AdministradorSistema.AddUserActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LoginA.NoActionBar" />
+        <activity
+            android:name=".AdministradorSistema.ModifyUserActivity"
             android:exported="true"
             android:theme="@style/Theme.LoginA.NoActionBar" />
 

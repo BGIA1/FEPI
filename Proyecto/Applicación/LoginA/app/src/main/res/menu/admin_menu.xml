@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_add_center"
+        android:title="Dar de alta centro" />
+    <item
+        android:id="@+id/nav_add_user"
+        android:title="Añadir usuarios" />
+    <item
+        android:id="@+id/nav_manage_permissions"
+        android:title="Gestionar permisos" />
+    <item
+        android:id="@+id/nav_delete_user"
+        android:title="Eliminar usuarios" />
+</menu>

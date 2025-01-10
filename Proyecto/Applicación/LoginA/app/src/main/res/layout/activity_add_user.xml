@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Nombre -->
+        <EditText
+            android:id="@+id/etNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre"
+            android:inputType="textPersonName"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Apellidos -->
+        <EditText
+            android:id="@+id/etApellidos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Apellidos"
+            android:inputType="textPersonName"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Correo -->
+        <EditText
+            android:id="@+id/etCorreo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Correo"
+            android:inputType="textEmailAddress"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Fecha de Nacimiento -->
+        <EditText
+            android:id="@+id/etFechaNacimiento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Fecha de Nacimiento (DD/MM/AAAA)"
+            android:inputType="date"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Número de Celular -->
+        <EditText
+            android:id="@+id/etCelular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Número de Celular"
+            android:inputType="phone"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Contraseña -->
+        <EditText
+            android:id="@+id/etContrasena"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contraseña"
+            android:inputType="textPassword"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Tipo de Cuenta -->
+        <Spinner
+            android:id="@+id/spTipoCuenta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:prompt="@string/prompt_tipo_cuenta"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Botón Guardar -->
+        <Button
+            android:id="@+id/btnGuardarUsuario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar Usuario"
+            android:backgroundTint="@android:color/holo_blue_light" />
+    </LinearLayout>
+</ScrollView>

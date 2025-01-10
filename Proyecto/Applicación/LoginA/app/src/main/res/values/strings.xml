@@ -8,14 +8,18 @@
     <string name="previous">Previous</string>
     <string name="open_drawer">Abrir menú</string>
     <string name="close_drawer">Cerrar menú</string>
+
+    <!-- Array for rejection reasons -->
     <string-array name="rejection_reasons">
-            <item>Falta de documentos</item>
-            <item>Documentos no visibles</item>
-            <item>Otro</item>
+        <item>Falta de documentos</item>
+        <item>Documentos no visibles</item>
+        <item>Otro</item>
     </string-array>
 
+    <!-- Prompt for tipo de cuenta -->
+    <string name="prompt_tipo_cuenta">Tipo de Cuenta</string>
 
-
+    <!-- Long placeholder text -->
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
@@ -52,6 +56,4 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
-
-
 </resources>
