@@ -50,38 +50,82 @@
 </head>
 <body>
     <script>
-		const supabaseUrl = 'https://cqvlrkpsafdazotfprgz.supabase.co';
+        const supabaseUrl = 'https://cqvlrkpsafdazotfprgz.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxdmxya3BzYWZkYXpvdGZwcmd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYzMDUwODUsImV4cCI6MjA1MTg4MTA4NX0.s0HUZhvxsPZxWvv2aAsz5RF_yPmUPdauSbEktDGGE6Y';
         const supaClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+        async function enviarFormulario() {
+            // Obtener los valores de los campos del formulario
+            const nombre = document.getElementById('nombre').value.trim();
+            const fechaNacimiento = document.getElementById('fecha_nacimiento').value.trim();
+            const telefono = document.getElementById('telefono').value.trim();
+            const correo = document.getElementById('correo').value.trim();
+            const curp = document.getElementById('curp').value.trim();
+            const nacionalidad = document.getElementById('nacionalidad').value.trim();
+            const estudiosConcluidos = document.getElementById('estudios_concluidos').value.trim();
+            const gradoEstudios = document.getElementById('grado_estudios').value.trim() || null;
+            const lenguaIndigena = document.getElementById('lengua_indigena').value.trim() || null;
+            const calzado = document.getElementById('calzado').value.trim();
+            const talla_camisa = document.getElementById('talla_camisa').value.trim();
+            const talla_pantalon = document.getElementById('talla_pantalon').value.trim();
+            const estado = document.getElementById('estado').value.trim();
+            const municipio = document.getElementById('municipio').value.trim();
+            const cuenta_bancaria = document.getElementById('cuenta_bancaria').value.trim();
 
-        async function obtenerDatos() {
-            const { data, error } = await supaClient.from('usuarios').select('*');
-            if (error) {
-                console.error('Error:', error);
-            } else {
-                console.log('Usuarios:', data);
+            // Validar que todos los campos obligatorios estén llenos
+            if (!nombre || !fechaNacimiento || !telefono || !correo || !curp || !nacionalidad || !estudiosConcluidos || !calzado || !talla_camisa || !talla_pantalon || !estado || !municipio || !cuenta_bancaria) {
+                alert('Necesitas llenar todos los campos para continuar');
+                return;
+            }
+
+            // Crear un objeto con los datos a enviar
+            const datosAspirante = {
+                nombre,
+                fechaNacimiento,
+                telefono,
+                correo,
+                curp,
+                nacionalidad,
+                estudiosConcluidos,
+                gradoEstudios,
+                lenguaIndigena,
+                calzado,
+                talla_camisa,
+                talla_pantalon,
+                estado,
+                municipio,
+                cuenta_bancaria,
+            };
+
+            // Subir los datos a la tabla "aspirantes" en la base de datos
+            try {
+                const { data, error } = await supaClient.from('aspirantes').insert([datosAspirante]);
+                if (error) {
+                    console.error('Error al subir los datos:', error);
+                    alert('Ocurrió un error al enviar tus datos. Intenta nuevamente.');
+                } else {
+                    alert('Has concluido tu registro satisfactoriamente');
+                }
+            } catch (err) {
+                console.error('Error inesperado:', err);
+                alert('Error inesperado al enviar los datos. Por favor, intenta más tarde.');
             }
         }
-
-        obtenerDatos();
-		
     </script>
     
     <div class="container">
         <h1>Formulario Aspirante</h1>
-        <form action="http://localhost:8080/guardar" method="POST"></form>
         <!--<form action="/submit_form" method="POST" enctype="multipart/form-data">-->
             <!-- Nombre completo -->
             <div class="form-group">
-                <label for="nombre">Nombre completo:</label>
+                <label for="nombre">Nombre completo:<small>(Empezando por apellido paterno)</small></label>
                 <input type="text" id="nombre" name="nombre" required>
             </div>
 
             <!-- Fecha de nacimiento -->
             <div class="form-group">
-                <label for="fecha_nacimiento">Fecha de nacimiento (YYYY-MM-DD):</label>
-                <input type="text" id="fecha_nacimiento" name="fecha_nacimiento" pattern="\d{4}-\d{2}-\d{2}" placeholder="YYYY-MM-DD" required>
+                <label for="fecha_nacimiento">Fecha de nacimiento:</label>
+                <input type="date" id="fecha_nacimiento" required>
             </div>
 
             <!-- Número telefónico -->
@@ -135,26 +179,39 @@
 
             <!-- Lengua indígena -->
             <div class="form-group">
-                <label for="lengua_indigena">Lengua indígena:</label>
-                <input type="text" id="lengua_indigena" name="lengua_indigena">
+                <label for="lengua_indigena">Lengua indígena: <small>(En caso de hablar una lengua indigena escribe ¿cual?)</small></label>
+                <input type="text" id="lengua_indigena">
             </div>
 
             <!-- CURP -->
             <div class="form-group">
                 <label for="curp">CURP:</label>
-                <input type="text" id="curp" name="curp" maxlength="18" minlength="18" required>
+                <input type="text" id="curp" name="curp" class="form-control" oninput="this.value = this.value.toUpperCase();" />
             </div>
 
-            <!-- Calzado -->
+            <!-- CURP -->
             <div class="form-group">
-                <label for="calzado">Talla de calzado:</label>
-                <input type="number" id="calzado" name="calzado" required>
+                <label for="curp">CURP:</label>
+                <input type="text" id="curp" name="curp" class="form-control" 
+                    maxlength="18" 
+                    pattern="[A-Z]{18}" 
+                    oninput="this.value = this.value.toUpperCase();" 
+                    title="Debe ingresar solo 18 letras mayúsculas" 
+                    required />
             </div>
 
             <!-- Talla de camisa -->
             <div class="form-group">
                 <label for="talla_camisa">Talla de camisa:</label>
-                <input type="text" id="talla_camisa" name="talla_camisa" required>
+                <select id="talla_camisa" name="talla_camisa" required>
+                    <option value="">Selecciona una talla</option>
+                    <option value="XS">XS</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                </select>
             </div>
 
             <!-- Talla de pantalón -->
@@ -337,9 +394,18 @@
                 <input type="text" id="cuenta_bancaria" name="cuenta_bancaria" required>
             </div>
 
+            <!-- Confirmar cuenta bancaria -->
             <div class="form-group">
-                <input type="submit" value="Enviar solicitud">
+                <label for="confirmar_cuenta_bancaria">Confirmar cuenta bancaria:</label>
+                <input type="text" id="confirmar_cuenta_bancaria" name="confirmar_cuenta_bancaria" required>
             </div>
+
+            <form onsubmit="event.preventDefault(); enviarFormulario();">
+                <!-- Otros campos del formulario aquí -->
+                <div class="form-group">
+                    <button type="button" onclick="enviarFormulario()">Enviar solicitud</button>
+                </div>
+            </form>            
         </form>
     </div>
 </body>
