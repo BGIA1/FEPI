@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Routing</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <div id="map" style="height: 900px;"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js"></script>
+    <script src="calculoRuta.js"></script>
+    <script>
+        // Inicializa el mapa
+        const map = L.map('map').setView([19.432608, -99.133209], 5); // Cambia las coordenadas
+
+        // Agrega capa base de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+          // Crear íconos personalizados
+          const inicioIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/1057/1057325.png', // Ícono de inicio
+            iconSize: [50, 50], // Tamaño del ícono
+            iconAnchor: [15, 30] // Punto donde se ancla el ícono
+        });
+
+
+        // Agrega el cálculo de rutas
+        L.Routing.control({
+            waypoints: rutaGIS.map(index => coordenadasComunidades[index]),
+            routeWhileDragging: true, // Permitir arrastrar la ruta
+            
+            showAlternatives: true, // Mostrar rutas alternativas
+            createMarker: function(i, waypoint, n) {
+                // Cambiar el marcador según sea inicio o fin
+                if (i === 0) {
+                    return L.marker(waypoint.latLng, { icon: inicioIcon });
+                } else if (i === n - 1) {
+                    return L.marker(waypoint.latLng, { icon: inicioIcon });
+                } else {
+                    return L.marker(waypoint.latLng); // Marcadores intermedios (si los hubiera)
+                }
+            },
+            altLineOptions: {
+                styles: [
+                    { color: 'green', opacity: 0.5, weight: 5 }, // Estilo de las rutas alternas
+                    { color: 'orange', opacity: 0.5, weight: 5 } // Otro estilo de las rutas alternas
+                ]
+            },
+            lineOptions: {
+                styles: [{ color: 'blue', opacity: 0.7, weight: 5 }] // Ruta principal
+            }
+        }).addTo(map);
+         // Opcional: quitar el contenedor de instrucciones
+         document.querySelector('.leaflet-routing-container').style.display = 'none';
+    </script>
+</body>
+</html>
