@@ -1,0 +1,14 @@
+<resources>
+    <string-array name="figuras_educativas">
+        <item>Figura 1</item>
+        <item>Figura 2</item>
+        <item>Figura 3</item>
+        <item>Figura 4</item>
+    </string-array>
+
+    <string-array name="desempenos">
+        <item>POR DEBAJO DE LAS EXPECTATIVAS</item>
+        <item>CUMPLIENDO CON LAS EXPECTATIVAS</item>
+        <item>SUPERANDO LAS EXPECTATIVAS</item>
+    </string-array>
+</resources>

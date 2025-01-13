@@ -1,0 +1,27 @@
+<resources>
+    <!-- Tema general de la app -->
+    <style name="Theme.CONAFE" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/blue_medium</item>
+        <item name="colorPrimaryDark">@color/blue_dark</item>
+        <item name="colorAccent">@color/blue_cyan</item>
+        <item name="android:statusBarColor">@color/blue_dark</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+    <!-- Tema sin barra de acción -->
+    <style name="Theme.CONAFE.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/blue_medium</item>
+        <item name="colorPrimaryDark">@color/blue_dark</item>
+        <item name="colorAccent">@color/blue_cyan</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Otros atributos de tu tema -->
+    </style>
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Otras propiedades -->
+    </style>
+
+
+</resources>

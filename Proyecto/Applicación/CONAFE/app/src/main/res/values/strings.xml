@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">CONAFE</string>
+    <string name="open_drawer">Abrir menú</string>
+    <string name="close_drawer">Cerrar menú</string>
+    <string name="navigation_drawer_open">Abrir menú</string>
+    <string name="navigation_drawer_close">Cerrar menú</string>
+    <string-array name="menu_opciones_supervisor">
+        <item>Perfil</item>
+        <item>Evaluar Docentes</item>
+        <item>Recursos</item>
+    </string-array>
+    
+</resources>

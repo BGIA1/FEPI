@@ -1,0 +1,40 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Título principal -->
+        <TextView
+            android:id="@+id/tvEncabezadoDepositos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Historial de Depósitos"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Campo dinámico para el nombre -->
+        <TextView
+            android:id="@+id/tvNombreDepositos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre del usuario"
+            android:textSize="18sp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Tabla de depósitos -->
+        <TableLayout
+            android:id="@+id/tableLayoutDepositos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1"
+            android:shrinkColumns="1" />
+
+    </LinearLayout>
+</ScrollView>

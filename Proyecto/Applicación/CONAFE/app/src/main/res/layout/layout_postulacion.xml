@@ -1,0 +1,28 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Título principal -->
+    <TextView
+        android:id="@+id/tvTituloPostulacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Postularse para Figura Educativa"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Botón de postulación -->
+    <Button
+        android:id="@+id/btnPostularse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Postularse"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:textColor="@android:color/white" />
+
+</LinearLayout>

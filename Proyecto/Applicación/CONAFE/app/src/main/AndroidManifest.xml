@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.CONAFE"
+        tools:targetApi="31">
+
+        <activity
+            android:name=".inicio.MainActivity"
+            android:theme="@style/Theme.CONAFE.NoActionBar"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".inicio.LoginActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".figuraeducativa.FiguraEducativaActivity"
+            android:theme="@style/Theme.CONAFE.NoActionBar" />
+
+        <activity
+            android:name=".figuraeducativa.AlumnosActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <activity
+            android:name=".figuraeducativa.MateriasActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <activity
+            android:name=".figuraeducativa.BecasActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <activity
+            android:name=".figuraeducativa.ReportesActivity"
+            android:theme="@style/Theme.CONAFE.NoActionBar" />
+
+        <activity
+            android:name=".supervisor.InicioSupervisorActivity"
+            android:exported="true"
+            android:theme="@style/Theme.CONAFE.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".supervisor.EvaluarDocenteActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <!-- Alumno -->
+        <activity
+            android:name=".aspirante.AlumnoActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".aspirante.ProfileActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".aspirante.StatusActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".aspirante.MateriasActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".aspirante.DepositosActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".aspirante.PostulacionActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".aspirante.CalendarioActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!-- Coordinador -->
+        <activity
+            android:name=".coordinador.CoordinadorZonaActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".coordinador.AsignacionModuloActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".coordinador.AsignacionDocenteActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".coordinador.PromocionarAlumnosActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".coordinador.AsignarVisitaActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".coordinador.RecursosActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!-- Delegado Estatal -->
+        <activity
+            android:name=".delegado.DelegadoEstatalActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".delegado.EnviarRecursosActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+
+
+
+
+    </application>
+
+</manifest>

@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_profile"
+        android:title="Perfil"
+        android:icon="@android:drawable/ic_menu_myplaces" />
+    <item
+        android:id="@+id/nav_send_resources"
+        android:title="Enviar Recursos"
+        android:icon="@android:drawable/ic_menu_send" />
+</menu>

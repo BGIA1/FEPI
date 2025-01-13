@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_perfil"
+        android:title="Perfil"
+        />
+    <item
+        android:id="@+id/nav_alumnos"
+        android:title="Alumnos" />
+    <item
+        android:id="@+id/nav_materias"
+        android:title="Materias" />
+    <item
+        android:id="@+id/nav_becas"
+        android:title="Becas" />
+    <item
+        android:id="@+id/nav_depositos"
+        android:title="Depósitos" />
+    <item
+        android:id="@+id/nav_reportes"
+        android:title="Reportes" />
+
+</menu>
