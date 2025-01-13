@@ -8,6 +8,7 @@ import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.conafe.R
+import com.example.logina.initSupaClient
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,11 +23,13 @@ class MainActivity : AppCompatActivity() {
         animationDrawable.setExitFadeDuration(2000)
         animationDrawable.start()
 
+        initSupaClient()
+
         // Retraso para pasar a la pantalla de inicio de sesión
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish() // Finaliza la actividad actual para que no regrese al presionar "atrás"
-        }, 3000) // Cambia a 3000 ms (3 segundos) o al tiempo que prefieras
+        }, 1000) // Cambia a 3000 ms (3 segundos) o al tiempo que prefieras
     }
 }
