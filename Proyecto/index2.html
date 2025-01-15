@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Aspirante - CONAFE</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        input[type="text"], input[type="number"], input[type="file"], input[type="email"], select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const supabaseUrl = 'https://cqvlrkpsafdazotfprgz.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxdmxya3BzYWZkYXpvdGZwcmd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYzMDUwODUsImV4cCI6MjA1MTg4MTA4NX0.s0HUZhvxsPZxWvv2aAsz5RF_yPmUPdauSbEktDGGE6Y';
+        const supaClient = supabase.createClient(supabaseUrl, supabaseKey);
+    
+        async function enviarFormulario() {
+            // Obtener los valores de los campos del formulario
+            const nombre = document.getElementById('nombre').value.trim();
+            const fechaNacimiento = document.getElementById('fecha_nacimiento').value.trim();
+            const telefono = document.getElementById('telefono').value.trim();
+            const correo = document.getElementById('correo').value.trim();
+            const curp = document.getElementById('curp').value.trim();
+            const nacionalidad = document.getElementById('nacionalidad').value.trim();
+            const estudiosConcluidos = document.getElementById('estudios_concluidos').value.trim();
+            const gradoEstudios = document.getElementById('grado_estudios').value.trim() || null;
+            const lenguaIndigena = document.getElementById('lengua_indigena').value.trim() || null;
+            const calzado = document.getElementById('calzado').value.trim();
+            const talla_camisa = document.getElementById('talla_camisa').value.trim();
+            const talla_pantalon = document.getElementById('talla_pantalon').value.trim();
+            const estado = document.getElementById('estado').value.trim();
+            const municipio = document.getElementById('municipio').value.trim();
+            const cuenta_bancaria = document.getElementById('cuenta_bancaria').value.trim();
+    
+            // Validar que todos los campos obligatorios estén llenos
+            if (!nombre || !fechaNacimiento || !telefono || !correo || !curp || !nacionalidad || !estudiosConcluidos || !calzado || !talla_camisa || !talla_pantalon || !estado || !municipio || !cuenta_bancaria) {
+                alert('Necesitas llenar todos los campos para continuar');
+                return;
+            }
+    
+            // Generar usuario y contraseña
+            const anioNacimiento = fechaNacimiento.split('-')[0]; // Asume formato YYYY-MM-DD
+            const usuario = `${curp.substring(0, 4)}${anioNacimiento}`.toLowerCase(); // Primeras 4 letras + año
+            const contrasena = curp; // CURP completo
+    
+            // Crear un objeto con los datos a enviar
+            const datosAspirante = {
+                nombre,
+                fechaNacimiento,
+                telefono,
+                correo,
+                curp,
+                nacionalidad,
+                estudiosConcluidos,
+                gradoEstudios,
+                lenguaIndigena,
+                calzado,
+                talla_camisa,
+                talla_pantalon,
+                estado,
+                municipio,
+                cuenta_bancaria,
+                usuario,
+                contrasena
+            };
+    
+            // Subir los datos a la tabla "aspirantes" en la base de datos
+            try {
+                const { data, error } = await supaClient.from('aspirantes').insert([datosAspirante]);
+                if (error) {
+                    console.error('Error al subir los datos:', error);
+                    alert('Ocurrió un error al enviar tus datos. Intenta nuevamente.');
+                } else {
+                    alert('Has concluido tu registro satisfactoriamente');
+                }
+            } catch (err) {
+                console.error('Error inesperado:', err);
+                alert('Error inesperado al enviar los datos. Por favor, intenta más tarde.');
+            }
+        }
+    </script>    
+    
+    <div class="container">
+        <h1>Formulario Aspirante</h1>
+        <!--<form action="/submit_form" method="POST" enctype="multipart/form-data">-->
+            <!-- Nombre completo -->
+            <div class="form-group">
+                <label for="nombre">Nombre completo:<small>(Empezando por apellido paterno)</small></label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
+
+            <!-- Fecha de nacimiento -->
+            <div class="form-group">
+                <label for="fecha_nacimiento">Fecha de nacimiento:</label>
+                <input type="date" id="fecha_nacimiento" required>
+            </div>
+
+            <!-- Número telefónico -->
+            <div class="form-group">
+                <label for="telefono">Número telefónico:</label>
+                <input type="number" id="telefono" name="telefono" pattern="[+0-9- ]+" required>
+            </div>
+
+            <!-- Correo electrónico -->
+            <div class="form-group">
+                <label for="correo">Correo electrónico:</label>
+                <input type="email" id="correo" name="correo" required>
+            </div>
+
+            <!-- Nacionalidad -->
+            <div class="form-group">
+                <label for="nacionalidad">Nacionalidad:</label>
+                <select id="nacionalidad" name="nacionalidad" onchange="mostrarCampoGrado()" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="mexicano">Mexicano</option>
+                    <option value="otro">otro</option>
+                </select>
+            </div>
+            <!--Estudios -->
+            <div class="form-group">
+                <label for="estudios_concluidos">¿Concluiste tus estudios?</label>
+                <select id="estudios_concluidos" name="estudios_concluidos" onchange="mostrarCampoGrado()" required>
+                    <option value="">Seleccione una opción</option>
+                    <option value="si">Sí</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="campo-grado" style="display: none;">
+                <label for="grado_estudios">¿Hasta qué grado?</label>
+                <input type="text" id="grado_estudios" name="grado_estudios" placeholder="Ejemplo: Bachillerato, Secundaria">
+            </div>
+            
+            <script>
+                function mostrarCampoGrado() {
+                    const select = document.getElementById('estudios_concluidos');
+                    const campoGrado = document.getElementById('campo-grado');
+                    
+                    if (select.value === 'si') {
+                        campoGrado.style.display = 'block';
+                    } else {
+                        campoGrado.style.display = 'none';
+                    }
+                }
+            </script>            
+
+            <!-- Lengua indígena -->
+            <div class="form-group">
+                <label for="lengua_indigena">Lengua indígena: <small>(En caso de hablar una lengua indigena escribe ¿cual?)</small></label>
+                <input type="text" id="lengua_indigena">
+            </div>
+
+            <!-- CURP -->
+            <div class="form-group">
+                <label for="curp">CURP:</label>
+                <input type="text" id="curp" name="curp" class="form-control" 
+                    maxlength="18" 
+                    pattern="[A-Z]{18}" 
+                    oninput="this.value = this.value.toUpperCase();" 
+                    title="Debe ingresar solo 18 letras mayúsculas" 
+                    required />
+            </div>
+
+            <!-- calzado -->
+            <div class="form-group">
+                <label for="calzado">Calzado:</label>
+                <input type="number" id="calzado" name="calzado" class="form-control" oninput="this.value = this.value.toUpperCase();" />
+            </div>
+
+            <!-- Talla de camisa -->
+            <div class="form-group">
+                <label for="talla_camisa">Talla de camisa:</label>
+                <select id="talla_camisa" name="talla_camisa" required>
+                    <option value="">Selecciona una talla</option>
+                    <option value="XS">XS</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                </select>
+            </div>
+
+            <!-- Talla de pantalón -->
+            <div class="form-group">
+                <label for="talla_pantalon">Talla de pantalón:</label>
+                <input type="number" id="talla_pantalon" name="talla_pantalon" required>
+            </div>
+
+            <!-- Estado de la República -->
+            <div class="form-group">
+                <label for="estado">Estado de la República:</label>
+                <select id="estado" name="estado" onchange="actualizarMunicipios()" required>
+                    <option value="">Seleccione un estado</option>
+                    <option value="aguascalientes">Aguascalientes</option>
+                    <option value="baja_california">Baja California</option>
+                    <option value="baja_california_sur">Baja California Sur</option>
+                    <option value="campeche">Campeche</option>
+                    <option value="chiapas">Chiapas</option>
+                    <option value="chihuahua">Chihuahua</option>
+                    <option value="coahuila">Coahuila</option>
+                    <option value="colima">Colima</option>
+                    <option value="durango">Durango</option>
+                    <option value="guanajuato">Guanajuato</option>
+                    <option value="guerrero">Guerrero</option>
+                    <option value="hidalgo">Hidalgo</option>
+                    <option value="jalisco">Jalisco</option>
+                    <option value="mexico">México</option>
+                    <option value="michoacan">Michoacán</option>
+                    <option value="morelos">Morelos</option>
+                    <option value="nayarit">Nayarit</option>
+                    <option value="nuevo_leon">Nuevo León</option>
+                    <option value="oaxaca">Oaxaca</option>
+                    <option value="puebla">Puebla</option>
+                    <option value="queretaro">Querétaro</option>
+                    <option value="quintana_roo">Quintana Roo</option>
+                    <option value="san_luis_potosi">San Luis Potosí</option>
+                    <option value="sinaloa">Sinaloa</option>
+                    <option value="sonora">Sonora</option>
+                    <option value="tabasco">Tabasco</option>
+                    <option value="tamaulipas">Tamaulipas</option>
+                    <option value="tlaxcala">Tlaxcala</option>
+                    <option value="veracruz">Veracruz</option>
+                    <option value="yucatan">Yucatán</option>
+                    <option value="zacatecas">Zacatecas</option>
+                </select>
+            </div>
+
+            <!-- Municipio -->
+            <div class="form-group">
+                <label for="municipio">Municipio:</label>
+                <select id="municipio" name="municipio" required>
+                    <option value="">Seleccione un municipio</option>
+                </select>
+            </div>
+
+            <script>
+                // Lista de municipios por estado
+                const municipiosPorEstado = {
+                    aguascalientes: ["Aguascalientes", "Asientos", "Calvillo", "Cosío", "El Llano", "Jesús María", "Pabellón de Arteaga", "Rincón de Romos", "San Francisco de los Romo", "Tepezalá"],
+                    baja_california: ["Ensenada", "Mexicali", "Tecate", "Tijuana", "Playas de Rosarito"],
+                    baja_california_sur: ["Comondú", "La Paz", "Loreto", "Los Cabos", "Mulegé"],
+                    campeche: ["Calkiní", "Campeche", "Carmen", "Champotón", "Hecelchakán", "Hopelchén", "Palizada", "Tenabo", "Escárcega", "Calakmul", "Candelaria"],
+                    chiapas: ["Tuxtla Gutiérrez", "San Cristóbal de las Casas", "Comitán", "Tapachula", "Palenque"],
+                    chihuahua: ["Ahumada", "Aldama", "Allende", "Aquiles Serdán", "Ascensión", "Bachíniva", "Balleza", "Batopilas", "Bocoyna", "Buenaventura", "Camargo", "Carichí", "Casas Grandes", "Chihuahua", "Chínipas", "Coronado", "Coyame del Sotol", "Cuauhtémoc", "Cusihuiriachi", "Delicias", "Dr. Belisario Domínguez", "El Tule", "Galeana", "Guachochi", "Guadalupe", "Guadalupe y Calvo", "Guazapares", "Guerrero", "Hidalgo del Parral", "Huejotitán", "Ignacio Zaragoza", "Janos", "Jiménez", "Juárez", "Julimes", "La Cruz", "López", "Madera", "Maguarichi", "Manuel Benavides", "Matachí", "Matamoros", "Meoqui", "Morelos", "Moris", "Namiquipa", "Nonoava", "Nuevo Casas Grandes", "Ocampo", "Ojinaga", "Praxedis G. Guerrero", "Riva Palacio", "Rosales", "Rosario", "San Francisco de Borja", "San Francisco de Conchos", "San Francisco del Oro", "Santa Bárbara", "Santa Isabel", "Satevó", "Saucillo", "Temósachic", "Urique", "Uruachi", "Valle de Zaragoza"],
+                    coahuila: ["Abasolo", "Acuña", "Allende", "Arteaga", "Candela", "Castaños", "Cuatro Ciénegas", "Escobedo", "Francisco I. Madero", "Frontera", "General Cepeda", "Guerrero", "Hidalgo", "Jiménez", "Juárez", "Lamadrid", "Matamoros", "Monclova", "Morelos", "Múzquiz", "Nadadores", "Nava", "Ocampo", "Parras", "Piedras Negras", "Progreso", "Ramos Arizpe", "Sabinas", "Sacramento", "Saltillo", "San Buenaventura", "San Juan de Sabinas", "San Pedro", "Sierra Mojada", "Torreón", "Viesca", "Villa Unión", "Zaragoza"],
+                    colima: ["Armería", "Colima", "Comala", "Coquimatlán", "Cuauhtémoc", "Ixtlahuacán", "Manzanillo", "Minatitlán", "Tecomán", "Villa de Álvarez"],
+                    durango: ["Canatlán", "Canelas", "Coneto de Comonfort", "Cuencamé", "Durango", "El Oro", "Gómez Palacio", "Guadalupe Victoria", "Guanaceví", "Hidalgo", "Indé", "Lerdo", "Mapimí", "Mezquital", "Nazas", "Nombre de Dios", "Ocampo", "Otáez", "Pánuco de Coronado", "Peñón Blanco", "Poanas", "Pueblo Nuevo", "Rodeo", "San Bernardo", "San Dimas", "San Juan de Guadalupe", "San Juan del Río", "San Luis del Cordero", "San Pedro del Gallo", "Santa Clara", "Santiago Papasquiaro", "Súchil", "Tamazula", "Tepehuanes", "Tlahualilo", "Topia", "Vicente Guerrero"],
+                    guanajuato: ["Abasolo", "Acámbaro", "Apaseo el Alto", "Apaseo el Grande", "Atarjea", "Celaya", "Comonfort", "Coroneo", "Cortazar", "Cuerámaro", "Dolores Hidalgo", "Guanajuato", "Huanímaro", "Irapuato", "Jaral del Progreso", "Jerécuaro", "León", "Manuel Doblado", "Moroleón", "Ocampo", "Pénjamo", "Pueblo Nuevo", "Purísima del Rincón", "Romita", "Salamanca", "Salvatierra", "San Diego de la Unión", "San Felipe", "San Francisco del Rincón", "San José Iturbide", "San Luis de la Paz", "San Miguel de Allende", "Santa Catarina", "Santa Cruz de Juventino Rosas", "Santiago Maravatío", "Silao", "Tarandacuao", "Tarimoro", "Tierra Blanca", "Uriangato", "Valle de Santiago", "Victoria", "Villagrán", "Xichú", "Yuriria"],
+                    guerrero: ["Acapulco de Juárez", "Ajuchitlán del Progreso", "Alcozauca de Guerrero", "Alpoyeca", "Apaxtla", "Arcelia", "Atenango del Río", "Atlamajalcingo del Monte", "Atlixtac", "Atoyac de Álvarez", "Ayutla de los Libres", "Azoyú", "Benito Juárez", "Buenavista de Cuéllar", "Chilapa de Álvarez", "Chilpancingo de los Bravo", "Coahuayutla de José María Izazaga", "Cocula", "Copala", "Copalillo", "Copanatoyac", "Coyuca de Benítez", "Coyuca de Catalán", "Cuajinicuilapa", "Cualác", "Cuautepec", "Cuetzala del Progreso", "Cutzamala de Pinzón", "Eduardo Neri", "Florencio Villarreal", "General Canuto A. Neri", "General Heliodoro Castillo", "Huamuxtitlán", "Huitzuco de los Figueroa", "Iguala de la Independencia", "Igualapa", "Ixcateopan de Cuauhtémoc", "José Joaquín de Herrera", "Juan R. Escudero", "La Unión de Isidoro Montes de Oca", "Leonardo Bravo", "Malinaltepec", "Marquelia", "Mártir de Cuilapan", "Metlatónoc", "Mochitlán", "Olinalá", "Ometepec", "Pedro Ascencio Alquisiras", "Petatlán", "Pilcaya", "Pungarabato", "Quechultenango", "San Luis Acatlán", "San Marcos", "San Miguel Totolapan", "Taxco de Alarcón", "Tecoanapa", "Teloloapan", "Tepecoacuilco de Trujano", "Tetipac", "Tlacoachistlahuaca", "Tlacoapa", "Tlalchapa", "Tlalixtaquilla de Maldonado", "Tlapa de Comonfort", "Tlapehuala", "Xalpatláhuac", "Xochihuehuetlán", "Xochistlahuaca", "Zapotitlán Tablas", "Zirándaro", "Zitlala", "Zihuatanejo de Azueta"],
+                    hidalgo: ["Acatlán", "Actopan", "Agua Blanca de Iturbide", "Ajacuba", "Alfajayucan", "Almoloya", "Apan", "Atitalaquia", "Atlapexco", "Calnali", 
+                        "Cardonal", "Cuautepec de Hinojosa", "Chapantongo", "Chilcuautla", "Eloxochitlán", "Emiliano Zapata", "Epazoyucan", "Francisco I. Madero", 
+                        "Huauchinango", "Huautla", "Hueytlalpan", "Ixmiquilpan", "Jacala", "Jaltocán", "Jiquipilas", "La Misión", "Landa de Matamoros", "Lázaro Cárdenas", 
+                        "Metepec", "Mineral de la Reforma", "Mixquiahuala de Juárez", "Molango de Escamilla", "Nopala de Villagrán", "Pachuca de Soto", "Progreso de Obregón", 
+                        "San Agustín Tlaxiaca", "San Bartolo Tutotepec", "San Salvador", "Tezontepec de Aldama", "Tizayuca", "Tlahuelilpan", "Tlanalapa", "Tula de Allende", 
+                        "Tulancingo de Bravo", "Zimapán"],
+                    jalisco: ["Acatlán de Juárez", "Ahuacatlán", "Ameca", "Arandas", "Autlán de Navarro", "Ayutla", "Bolaños", "Cabo Corrientes", "Casimiro Castillo", 
+                        "Chapala", "Chimaltitán", "Cihuatlán", "Cocula", "Colotlán", "Concepción de Buenos Aires", "Cuautitlán de García Barragán", "Cuquío", "Degollado", 
+                        "Ejutla", "El Grullo", "Guachinango", "Hostotipaquillo", "Huejúcar", "Hueytlalpan", "Ixtlahuacán de los Membrillos", "Jalostotitlán", "Jocotepec", 
+                        "Juanacatlán", "La Barca", "La Huerta", "Lagos de Moreno", "Lagos de Moreno", "Lagos de Moreno", "Magdalena", "Mazamitla", "Mexticacán", 
+                        "Mezquitic", "Ocotlán", "Puerto Vallarta", "San Diego", "San Juan de los Lagos", "San Miguel el Alto", "San Sebastián del Oeste", "Santa María de los Ángeles", 
+                        "Sayula", "Teocuitatlán de Corona", "Tequila", "Tepatitlán de Morelos", "Tonala", "Tuxpan", "Valle de Juárez", "Villa Corona", "Zapotlán el Grande"],
+                    mexico: ["Acambay", "Aculco", "Almoloya de Alquisiras", "Amanalco", "Amatepec", "Amecameca", "Apaxco", "Atlautla", "Axapusco", "Boca de Huérgano", 
+                        "Coatepec Harinas", "Cocotitlán", "Chalco", "Chapa de Mota", "Chimalhuacán", "Coacalco", "Coyotepec", "Cuautitlán", "Culiacán", "Ecatepec", 
+                        "Huehuetoca", "Hueypoxtla", "Ixtapan de la Sal", "Ixtapaluca", "Lerma", "Malinalco", "Melchor Múzquiz", "Metepec", "Nicolás Romero", "Naucalpan de Juárez", 
+                        "Ocoyoacac", "Ojo de Agua", "San Mateo Atenco", "Tlalnepantla","Texcoco", "Toluca", "Tultepec", "Tultitlán", "Zumpango"],
+                    michoacan: [
+                        "Acuitzio", "Aguililla", "Álvaro Obregón", "Angamacutiro", "Apatzingán", "Aquila", "Ario", "Avenida Morelos", "Buenavista", "Cuitzeo", 
+                        "El Oro", "Guerrero", "Hidalgo", "Lázaro Cárdenas", "Maravatío", "Michoacán de Ocampo", "Pátzcuaro", "Sahuayo", "Taretan", "Tangancícuaro", 
+                        "Uruapan", "Zitácuaro"],
+                    morelos: ["Ayala", "Cuernavaca", "Jiutepec", "Jojutla", "Mazatepec", "Miacatlán", "Tepoztlán", "Tetecala", "Tlayacapan", "Totolapan", "Zacualpan de Amilpas"],
+                    nayarit: ["Acaponeta", "Ahuacatlán", "Amatlán de Cañas", "Bahía de Banderas", "Compostela", "Huajicori", "Ixtlán del Río", "Jala", "La Yesca", 
+                        "Rosamorada", "Ruiz", "San Blas", "San Pedro Lagunillas", "Santa María del Oro", "Tuxpan", "Xalisco"],
+                    nuevo_leon: ["Abasolo", "Agualeguas", "Allende", "Anáhuac", "Apodaca", "Aramberri", "Cadereyta Jiménez", "Cerralvo", "China", "Ciénega de Flores", 
+                        "Doctor Arroyo", "Doctor González", "El Carmen", "García", "Gonzalitos", "Guadalupe", "Hidalgo", "Iturbide", "Juárez", "Lampazos de Naranjo", 
+                        "Linares", "Monterrey", "Montemorelos", "San Nicolás", "San Pedro Garza García", "Santa Catarina", "Santiago", "Vallecillo", "Villaldama"],
+                    oaxaca: ["Abejones", "Acatlán de Pérez Figueroa", "Asunción Cacalotepec", "Asunción Ixtaltepec", "Atlan", "Atzompa", "Ayotzintepec", "Cacalotepec", "Candelaria Loxicha", 
+                        "Chahuites", "Chalcatongo de Hidalgo", "Chazumba", "Choapan", "Chihuahua", "Cuicatlán", "El Espinal", "El Tequio", "Guelatao de Juárez", "Guevea de Humboldt"],
+                    puebla: ["Acajete", "Ahuazotepec", "Aljojuca", "Amozoc", "Atlixco", "Atoyatempan", "Calpan", "Cholula", "Cuautlancingo", "Cuetzalan del Progreso", 
+                        "Chiautla de Tapia", "Tehuacán", "San Martín Texmelucan", "Tepeaca", "Teziutlán", "Xicotepec de Juárez", "Zacatlán", "Zautla"],
+                    queretaro: ["Amealco de Bonfil", "Arroyo Seco", "Cadereyta de Montes", "Colón", "El Marqués", "Ezequiel Montes", "Huimilpan", "Jalpan de Serra", "Landa de Matamoros",
+                        "Peñamiller", "Querétaro", "San Juan del Río", "Tequisquiapan", "Tolimán"],
+                    quintana_roo: ["Benito Juárez", "Cozumel", "Felipe Carrillo Puerto", "José María Morelos", "Lázaro Cárdenas", "Leona Vicario", "Othón P. Blanco", "Puerto Morelos", 
+                        "Riviera Maya", "Solidaridad", "Tulum"],
+                    san_luis_potosi: ["Ahualulco", "Aquismón", "Cárdenas", "Cedral", "Cerritos", "Charcas", "Ciudad Fernández", "Coxcatlán", "Ebano", "Guadalcázar", "Huehuetlán", 
+                        "San Luis Potosí", "Soledad de Graciano Sánchez", "Santa María del Río", "Tamuín", "Tancanhuitz", "Tanquián de Escobedo", "Villa de Arriaga", "Villa de Reyes"],
+                    sinaloa: ["Ahome", "Angostura", "Badiraguato", "Concordia", "Cosalá", "Culiacán", "El Fuerte", "Escuinapa", "Guasave", "Mazatlán", "Mocorito", "Navolato", 
+                        "Rosario", "Salvador Alvarado", "San Ignacio", "Sinaloa", "Sinaloa de Leyva", "Topolobampo"],
+                    sonora: ["Álamos", "Bacadéhuachi", "Bácum", "Cajeme", "Cananea", "Caborca", "Chihuahua", "Empalme", "Guaymas", "Hermosillo", "Huatabampo", "Magdalena de Kino", 
+                        "Navojoa", "Nogales", "San Luis Río Colorado", "Sahuaripa", "San Javier", "San Miguel de Horcasitas", "San Pedro", "Santa Ana", "Sán Carlos"],
+                    tabasco: ["Balancán", "Cárdenas", "Centla", "Cunduacán", "Emiliano Zapata", "Huimanguillo", "Jalpa de Méndez", "Jonuta", "Macuspana", "Nacajuca", "Paraíso", 
+                        "Tacotalpa", "Teapa", "Tenosique", "Villahermosa"],
+                    tamaulipas: ["Abasolo", "Altamira", "Antiguo Morelos", "Burgos", "Ciudad Madero", "Ciudad Victoria", "Güémez", "Jaumave", "Jiménez", "Llera", "Mainero", "Mante", 
+                        "Matamoros", "Mier", "Miguel Alemán", "Miquihuana", "Nuevo Laredo", "Padilla", "Reynosa", "Río Bravo", "San Fernando", "San Nicolás", "San Pedro", "Tampico"],
+                    tlaxcala: ["Apizaco", "Calpulalpan", "Chiautempan", "Huamantla", "Ixtenco", "La Magdalena Tlaltelulco", "Lázaro Cárdenas", "Mazatecochco", "Santa Cruz Tlaxcala", 
+                        "Tetla de la Solidaridad", "Tepeyanco", "Tlaxcala", "Tzompantepec", "Xaloztoc", "Xicohtzinco", "Yauhquemehcan"],
+                    veracruz: ["Acayucan", "Acatlán", "Alamo Temapache", "Amatitlán", "Atzalan", "Banderilla", "Coatepec", "Córdoba", "Cosamaloapan", "Cuitláhuac", "Fortín", 
+                        "Hueyapan de Ocampo", "Ixtaczoquitlán", "Jalcomulco", "Jaltipan", "Jilotepec", "La Antigua", "Las Choapas", "Minatitlán", "Misantla", "Nanchital", 
+                        "Nautla", "Orizaba", "Paso del Macho", "Paso de Ovejas", "Perote", "Río Blanco", "San Andrés Tuxtla", "San Juan Evangelista", "Tantoyuca", 
+                        "Tezonapa", "Tuxpan", "Veracruz", "Xalapa", "Zongolica"],
+                    yucatan: ["Abalá", "Acanceh", "Baca", "Bokobá", "Celestún", "Chicxulub Pueblo", "Chocholá", "Conkal", "Cuzamá", "Dzidzantún", "Espita", "Halacho", "Hocabá", 
+                        "Homún", "Ixil", "Izamal", "Kanasín", "Kinchil", "Kozmul", "Mérida", "Muna", "Muxupip", "Opichén", "Oxkutzcab", "Sanahcat", "Temax", "Temozón", 
+                        "Ticul", "Tizimín", "Ucú", "Valladolid"],
+                    zacatecas: ["Apozol", "Apulco", "Atolinga", "Benito Juárez", "Calera", "Cañitas de Felipe Pescador", "Concepción del Oro", "Cuauhtémoc", "Chililique", "Chico", 
+                        "Fresnillo", "Genaro Codina", "Jerez", "Juchipila", "Loreto", "Mazapil", "Melchor Múzquiz", "Monte Escobedo", "Morelos", "Noria de Ángeles", "Ojocaliente", 
+                        "Pánuco", "Pinos", "Río Grande", "Saín Alto", "Santa María de la Paz", "Sombrerete", "Susticacán", "Tabasco", "Tepechitlán", "Trancoso", "Valparaíso", 
+                        "Villa González Ortega", "Villanueva", "Zacatecas"]
+                };
+
+                function actualizarMunicipios() {
+                    const estadoSelect = document.getElementById('estado');
+                    const municipioSelect = document.getElementById('municipio');
+                    const estadoSeleccionado = estadoSelect.value;
+
+                    // Limpia los municipios actuales
+                    municipioSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
+
+                    // Si hay municipios para el estado seleccionado, los añade al select
+                    if (municipiosPorEstado[estadoSeleccionado]) {
+                        municipiosPorEstado[estadoSeleccionado].forEach((municipio) => {
+                            const opcion = document.createElement('option');
+                            opcion.value = municipio.toLowerCase().replace(/\s+/g, '_'); // Ejemplo: "San Luis Potosí" -> "san_luis_potosi"
+                            opcion.textContent = municipio;
+                            municipioSelect.appendChild(opcion);
+                        });
+                    }
+                }
+            </script>
+
+
+            <!-- Originario de la región -->
+            <div class="form-group">
+                <label for="region">¿Eres originario de la región?</label>
+                <select id="region" name="region" required>
+                    <option value="1">Sí</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+
+            <!-- INE -->
+            <div class="form-group">
+                <label for="ine">Sube tu INE:</label>
+                <input type="file" id="ine" name="ine" required>
+            </div>
+
+            <!-- Comprobante de domicilio -->
+            <div class="form-group">
+                <label for="comprobante_domicilio">Sube tu comprobante de domicilio:</label>
+                <input type="file" id="comprobante_domicilio" name="comprobante_domicilio" required>
+            </div>
+
+            <!-- Comprobante de estudios -->
+            <div class="form-group">
+                <label for="comprobante_estudios">Sube tu comprobante de estudios:</label>
+                <input type="file" id="comprobante_estudios" name="comprobante_estudios" required>
+            </div>
+
+            <!-- Cuenta bancaria -->
+            <div class="form-group">
+                <label for="cuenta_bancaria">Cuenta bancaria:</label>
+                <input type="number" id="cuenta_bancaria" name="cuenta_bancaria" required>
+            </div>
+
+            <!-- Confirmar cuenta bancaria -->
+            <div class="form-group">
+                <label for="confirmar_cuenta_bancaria">Confirmar cuenta bancaria:</label>
+                <input type="number" id="confirmar_cuenta_bancaria" name="confirmar_cuenta_bancaria" required>
+            </div>
+
+            <form onsubmit="event.preventDefault(); enviarFormulario();">
+                <!-- Otros campos del formulario aquí -->
+                <div class="form-group">
+                    <button type="button" onclick="enviarFormulario()">Enviar solicitud</button>
+                </div>
+            </form>            
+        </form>
+    </div>
+</body>
+</html>
