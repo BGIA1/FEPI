@@ -5,12 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leaflet Routing</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    #container {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 90%;
+    }
+    #panelRuta {
+        flex: 1;
+        height: 100%;
+        font-size: 1.7em;
+        overflow-y: scroll;
+        padding: 10px;
+        box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+    }
+    #map {
+        flex: 3;
+        height: 100%;
+    }
+    #panelDistribucion {
+        flex: 1;
+        height: 100%;
+        font-size: 1.7em;
+        overflow-y: scroll;
+        padding: 10px;
+        box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+    }
+</style>
 <body>
-    <div id="map" style="height: 900px;"></div>
+    <div id="container">
+        <div id="panelRuta">
+            <h2>Ruta de entrega de equipamiento</h2>
+            <ul id="rutaDistribucion"></ul>
+        </div>
+        <div id="map"></div>
+        <div id="panelDistribucion">
+            <h2>Lista de Distribución según la estimación</h2>
+            <ul id="listaDistribucion"></ul>
+        </div>
+    </div>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js"></script>
     <script src="calculoRuta.js"></script>
+    <script src="supaManager.js"></script>
+    <script src="estimacion.js"></script>
     <script>
         // Inicializa el mapa
         const map = L.map('map').setView([19.432608, -99.133209], 5); // Cambia las coordenadas
@@ -28,14 +77,16 @@
             iconAnchor: [15, 30] // Punto donde se ancla el ícono
         });
 
+        [lstComunidades,ruta,distanciaTotal]=trazarRuta()
+        console.log(lstComunidades)
 
         // Agrega el cálculo de rutas
         L.Routing.control({
-            waypoints: rutaGIS.map(index => coordenadasComunidades[index]),
+            waypoints: ruta,
             routeWhileDragging: true, // Permitir arrastrar la ruta
-            
             showAlternatives: true, // Mostrar rutas alternativas
             createMarker: function(i, waypoint, n) {
+                updtPanelRuta();
                 // Cambiar el marcador según sea inicio o fin
                 if (i === 0) {
                     return L.marker(waypoint.latLng, { icon: inicioIcon });
@@ -57,6 +108,64 @@
         }).addTo(map);
          // Opcional: quitar el contenedor de instrucciones
          document.querySelector('.leaflet-routing-container').style.display = 'none';
+        		
+    // Llamar a la función desde index.html
+    const estados=["Aguascalientes","Baja California","Baja California Sur","Campeche","Coahuila","Colima","Chiapas","Chihuahua","Durango","Guanajuato","Guerrero","Hidalgo","Jalisco","México","Michoacán","Morelos","Nayarit","Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí","Sinaloa","Sonora","Tabasco","Tamaulipas","Tlaxcala","Veracruz","Yucatán","Zacatecas"]
+    const listaDistribucion=[]
+    estados.forEach((estado)=>
+        {
+            (async () => {
+                    const datos = await obtenerDatos(estado);
+                    if (datos) {
+                        //console.log('Datos obtenidos:', datos); 
+                        updtPanelDist();
+                        listaDistribucion.push({[estado]:estimar(2021,datos)})
+                    } else {
+                        console.log('No se pudieron obtener los datos.');
+                    }
+                })()
+        }
+    )
+    
+    console.log(listaDistribucion)
+
+    function updtPanelRuta() {
+            const listaDistribucionElement = document.getElementById('rutaDistribucion');
+            listaDistribucionElement.innerHTML = '';
+
+            lstComunidades.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${item}</strong>`;
+                listaDistribucionElement.appendChild(li);
+            });
+
+            const hi = document.createElement('h2');
+            hi.innerHTML = `<strong>Distancia aproximada: ${distanciaTotal} km</strong>`;
+                listaDistribucionElement.appendChild(hi);
+        }
+
+    function updtPanelDist() {
+            const listaDistribucionElement = document.getElementById('listaDistribucion');
+            listaDistribucionElement.innerHTML = '';
+            listaDistribucion.forEach(item => {
+                const estado = Object.keys(item)[0];
+                const distribucion = item[estado];
+                articulos=Object.values(distribucion)
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${estado}:</strong>
+                <br>Figuras Educativas estimadas ${articulos[4]}
+                <br>Botas ${articulos[0]}
+                <br>Chamarra ligera ${articulos[1]}
+                <br>Tenis ${articulos[2]}
+                <br>Bolsa de Dormir ${articulos[3]}
+                <br>Gorra ${articulos[5]}
+                <br>Mochila ${articulos[6]}
+                <br>Chamarra polar ${articulos[7]}
+                <br>Playera tipo polo ${articulos[8]}
+                `;
+                listaDistribucionElement.appendChild(li);
+            });
+        }
     </script>
 </body>
 </html>
