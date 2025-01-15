@@ -1,28 +1,36 @@
 // Variables globales
 let bestScore = Infinity; // Infinito positivo
-let mejorRuta = shuffleArray(Array.from({ length: 8 }, (_, i) => i + 1));
+let mejorRuta = shuffleArray(Array.from({ length: 11 }, (_, i) => i + 1));
+
+const listaComunidades = ["","Ciudad de México","Aguascalientes","Baja California","Baja California Sur","Campeche","Chiapas","Chihuahua","Coahuila","Colima","Durango"]
 
 const coordenadasComunidades = [
     { lat: "", lng: "" }, // Punto vacío
-    { lat: "19.50955637191590", lng: "-99.15457376402300" }, // CDMX
-    { lat: "18.514357211994800", lng: "-88.32729808936540" }, // QUINTANA ROO
-    { lat: "22.12178582641720", lng: "-100.98269946108200" }, // SAN LUIS POTOSÍ
-    { lat: "19.078832995653300", lng: "-98.20772925929980" }, // PUEBLA
-    { lat: "19.50769992378020", lng: "-96.88696693180490" }, // VERACRUZ
-    { lat: "21.028226770454000", lng: "-89.51790719122570" }, // YUCATÁN
-    { lat: "22.730429511923000", lng: "-102.52729066490800" } // ZACATECAS
+    {lat: "19.50955637", lng: "-99.15457376"},  //Ciudad de México
+    {lat: "21.884719", lng: "-102.298988"}, //AGUASCALIENTES
+    {lat: "32.437727", lng: "-116.97538"},  //BAJA CALIFORNIA
+    {lat: "24.14437", lng: "-110.3005"},    //BAJA CALIFORNIA SUR
+    {lat: "19.8439", lng: "-90.5255"},  //CAMPECHE
+    {lat: "16.7529", lng: "-93.1162"},  //CHIAPAS
+    {lat: "28.6333", lng: "-106.0711"}, //CHIHUAHUA
+    {lat: "25.4383", lng: "-100.9777"}, //COAHUILA
+    {lat: "19.2855", lng: "-103.7632"}, //COLIMA
+    {lat: "24.0222", lng: "-104.6576"}  //DURANGO
 ];
 
 
 const M = [
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1339, 395, 135, 318, 1332, 579],
-    [0, 1339, 0, 1819, 1200, 1043, 265, 1948],
-    [0, 395, 1819, 0, 515, 771, 1727, 185],
-    [0, 135, 1200, 515, 0, 291, 1204, 712],
-    [0, 318, 1043, 771, 291, 0, 1028, 977],
-    [0, 1332, 265, 1727, 1204, 1047, 0, 1933],
-    [0, 579, 1948, 185, 712, 977, 1933, 0]
+    [0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,420,2282,1261,905,708,1231,683,485,757],
+    [0,420,0,1863,857,1246,1119,838,416,326,338],
+    [0,2282,1863,0,1128,2978,2964,1127,1739,1965,1525],
+    [0,1261,857,1128,0,2095,1969,652,953,864,574],
+    [0,905,1246,2978,2095,0,438,1852,1239,1390,1531],
+    [0,708,1119,2964,1969,438,0,1869,1261,1162,1448],
+    [0,1231,838,1127,652,1852,1869,0,617,1062,530],
+    [0,683,416,1739,953,1239,1261,617,0,739,404],
+    [0,485,326,1965,864,1390,1162,1062,739,0,533],
+    [0,757,338,1525,574,1531,1448,530,404,533,0]
 ];
 
 let elitismo = 0;
@@ -44,7 +52,7 @@ function shuffleArray(array) {
 
 // Generar cromosomas (recorrido inicial)
 function crearCromosomas() {
-    return shuffleArray(Array.from({ length: 7 }, (_, i) => i + 1));
+    return shuffleArray(Array.from({ length: 10 }, (_, i) => i + 1));
 }
 
 // Evaluar el fitness de un cromosoma
@@ -57,7 +65,7 @@ function evaluarCromosoma(cromosoma) {
     //F1.push(M[cromosoma[cromosoma.length - 1]][cromosoma[0]]);
 
     // Ajustar elitismo
-    elitismo = F1[0] <= 395 && F1[1] <= 395 ? 3 : F1[0] <= 395 ? 2 : 1;
+    elitismo = F1[0] <= 574 && F1[1] <= 574 ? 3 : F1[0] <= 574 ? 2 : 1;
 
     return [F1, F1.reduce((a, b) => a + b, 0)];
 }
@@ -68,7 +76,7 @@ function modificarCromosoma(cromosoma, F) {
     let j = 0;
 
     for (let i = elitismo; i < F.length - 1; i++) {
-        if (F[i] <= 395) {
+        if (F[i] <= 574) {
             const a = c.splice(i, 1)[0];
             c.splice(elitismo, 0, a);
             if (j < 4) j += 1;
@@ -109,14 +117,28 @@ function obtenerMejorRuta() {
     bestScore = distanciaInicial;
     mejorRuta = cromosomas;
     
+    generaciones=0
     // Iteraciones del algoritmo genético
-    for (let generacion = 0; generacion < 300; generacion++) {
+    while(bestScore>7200 && generaciones<100000){
         [cromosomas, F0] = nextGeneration(cromosomas, F0);
+        generaciones+=1
     }
 
+    console.log("Generaciones:", generaciones);
     return [mejorRuta, bestScore];
 }
 
-// Ejecución del algoritmo
-const [rutaGIS, distancia] = obtenerMejorRuta();
-console.log("Mejor ruta:", rutaGIS, "Distancia:", distancia);
+function trazarRuta()
+{
+    // Ejecución del algoritmo
+    const [rutaGIS, distancia] = obtenerMejorRuta();
+    console.log("Mejor ruta:", rutaGIS, "Distancia total:", distancia);
+
+    // Crear una nueva lista reordenada
+    const listaReordenada = rutaGIS.map(index => listaComunidades[index]);
+
+    //Ruta de coordenadas
+    const ruta=rutaGIS.map(index => coordenadasComunidades[index])
+
+    return [listaReordenada,ruta,distancia]
+}
