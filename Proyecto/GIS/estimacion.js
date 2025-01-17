@@ -69,6 +69,10 @@ function estimar(año,data)
     estimacionEquipamiento.Mochila=estimacionEquipamiento.NumFE
     estimacionEquipamiento["Chamarra polar"]=estimacionEquipamiento.Botas
     estimacionEquipamiento["Playera tipo polo"]=estimacionEquipamiento.NumFE*2
-    //console.log(estimacionEquipamiento)
+    estimacionEquipamiento["Total articulos"]=estimacionEquipamiento["Bolsa de Dormir"]+estimacionEquipamiento["Botas"]
+    +estimacionEquipamiento["Chamarra ligera"]+estimacionEquipamiento["Chamarra polar"]
+    +estimacionEquipamiento["Gorra"]+estimacionEquipamiento["Mochila"]
+    +estimacionEquipamiento["Playera tipo polo"]+estimacionEquipamiento["Tenis"]
+   
     return estimacionEquipamiento
 }

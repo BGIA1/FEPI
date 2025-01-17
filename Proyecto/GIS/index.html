@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaflet Routing</title>
+    <title>GIS</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
@@ -51,7 +51,7 @@
         </div>
         <div id="map"></div>
         <div id="panelDistribucion">
-            <h2>Lista de Distribución según la estimación</h2>
+            <h2>Distribución estimada</h2>
             <ul id="listaDistribucion"></ul>
         </div>
     </div>
@@ -61,6 +61,7 @@
     <script src="supaManager.js"></script>
     <script src="estimacion.js"></script>
     <script>
+        
         // Inicializa el mapa
         const map = L.map('map').setView([19.432608, -99.133209], 5); // Cambia las coordenadas
 
@@ -77,16 +78,27 @@
             iconAnchor: [15, 30] // Punto donde se ancla el ícono
         });
 
-        [lstComunidades,ruta,distanciaTotal]=trazarRuta()
-        console.log(lstComunidades)
+    function GIS(lstEstados,lstArticulosEstado,medianaArticulos) {
+        [lstComunidades,rutaCoords,distanciaTotal]=trazarRuta(lstEstados,lstArticulosEstado,medianaArticulos)
+ 
+        // Ordenar la lista de estados de acuerdo a la ruta
+        lstEntregaEq = listaDistribucion.sort((a, b) => {
+        const keyA = Object.keys(a)[0];
+        const keyB = Object.keys(b)[0];
+        return lstComunidades.indexOf(keyA) - lstComunidades.indexOf(keyB);
+        });
 
+        updtPanelDist();
+        updtPanelRuta();
+        //console.log(lstEntregaEq)
+        
         // Agrega el cálculo de rutas
         L.Routing.control({
-            waypoints: ruta,
+            waypoints: rutaCoords,
             routeWhileDragging: true, // Permitir arrastrar la ruta
             showAlternatives: true, // Mostrar rutas alternativas
             createMarker: function(i, waypoint, n) {
-                updtPanelRuta();
+              
                 // Cambiar el marcador según sea inicio o fin
                 if (i === 0) {
                     return L.marker(waypoint.latLng, { icon: inicioIcon });
@@ -108,26 +120,83 @@
         }).addTo(map);
          // Opcional: quitar el contenedor de instrucciones
          document.querySelector('.leaflet-routing-container').style.display = 'none';
+         
+        }
         		
     // Llamar a la función desde index.html
-    const estados=["Aguascalientes","Baja California","Baja California Sur","Campeche","Coahuila","Colima","Chiapas","Chihuahua","Durango","Guanajuato","Guerrero","Hidalgo","Jalisco","México","Michoacán","Morelos","Nayarit","Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí","Sinaloa","Sonora","Tabasco","Tamaulipas","Tlaxcala","Veracruz","Yucatán","Zacatecas"]
+    const estados=["Aguascalientes","Baja California","Baja California Sur","Campeche","Chiapas","Chihuahua","Coahuila","Colima","Durango","Guanajuato","Guerrero","Hidalgo","Jalisco","México","Michoacán","Morelos","Nayarit","Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí","Veracruz","Yucatán","Zacatecas"]
     const listaDistribucion=[]
-    estados.forEach((estado)=>
-        {
-            (async () => {
-                    const datos = await obtenerDatos(estado);
-                    if (datos) {
-                        //console.log('Datos obtenidos:', datos); 
-                        updtPanelDist();
-                        listaDistribucion.push({[estado]:estimar(2021,datos)})
-                    } else {
-                        console.log('No se pudieron obtener los datos.');
-                    }
-                })()
+    año=2022
+
+    const promesas = estados.map(async (estado) => {
+        const datos = await obtenerDatos(estado);
+        if (datos) {
+            //console.log('Datos obtenidos:', datos); 
+            listaDistribucion.push({[estado]:estimar(año,datos)})
+        } else {
+            console.log('No se pudieron obtener los datos.');
         }
-    )
+    });
+
+    Promise.all(promesas).then(() => {
+        let lstArticulosEstado=listaDistribucion.map((item) => {
+            const estado = Object.keys(item)[0];
+            const distribucion = item[estado];
+            articulos=Object.values(distribucion)
+            return {[estado]:articulos[9]}
+        });
+
+        // Ordenar la lista de estados
+        const listaArticulosOrdenada = lstArticulosEstado.sort((a, b) => {
+        const keyA = Object.keys(a)[0];
+        const keyB = Object.keys(b)[0];
+        return estados.indexOf(keyA) - estados.indexOf(keyB);
+        });
+
+        //console.log(listaArticulosOrdenada)
+
+        //Obtengo el promedio de articulos por estado
+        const mediaArticulos=lstArticulosEstado.reduce((acc, item) => {
+            const estado = Object.keys(item)[0];
+            const figurasEducativas = item[estado];
+            return acc + figurasEducativas;
+        }, 0) / lstArticulosEstado.length;
+
+       //console.log(Math.round(mediaArticulos))
+
+       //Obtengo la mediana de articulos por estado
+        const medianalstArticulos = mediana(lstArticulosEstado.map((item) => Object.values(item)[0]));
+        console.log("Mediana total articulos: ",medianalstArticulos);
+
+        estados.splice(0,0,...["","CDMX"])
+
+        lstArticulosEstado=lstArticulosEstado.map((item) => Object.values(item)[0])
+
+        lstArticulosEstado.splice(0,0,...[0,0])
+
+        //console.log(lstArticulosEstado)
+
+        GIS(estados,lstArticulosEstado,medianalstArticulos)        
+    });
+
+    function mediana(lista) {
+    // Ordenar la lista
+    const listaOrdenada = lista.sort((a, b) => a - b);
     
-    console.log(listaDistribucion)
+    // Calcular la posición de la mediana
+    const longitud = listaOrdenada.length;
+    const esPar = longitud % 2 === 0;
+    const mitad = Math.floor(longitud / 2);
+    
+    // Devolver la mediana
+    if (esPar) {
+        // Si la lista tiene un número par de elementos, la mediana es el promedio de los dos valores centrales
+        return (listaOrdenada[mitad - 1] + listaOrdenada[mitad]) / 2;
+    } else {
+        // Si la lista tiene un número impar de elementos, la mediana es el valor central
+        return listaOrdenada[mitad];
+    }
+}
 
     function updtPanelRuta() {
             const listaDistribucionElement = document.getElementById('rutaDistribucion');
@@ -162,6 +231,7 @@
                 <br>Mochila ${articulos[6]}
                 <br>Chamarra polar ${articulos[7]}
                 <br>Playera tipo polo ${articulos[8]}
+                <br>Total de artículos ${articulos[9]}
                 `;
                 listaDistribucionElement.appendChild(li);
             });
