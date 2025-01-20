@@ -1,15 +1,23 @@
-package com.example.logina
+package com.example.conafe
 
+import android.content.Context
+import android.widget.Toast
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import kotlinx.coroutines.*
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.floatOrNull
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonObject
+
 
 
 @Serializable
@@ -35,33 +43,137 @@ fun initSupaClient()
     }
 }
 
-fun login(correo: String,contraseña: String,callback: (String) -> Unit) {
+fun actualizarRegistro(tabla: String, camposActualizar: List<Pair<String,String>>, filtros: List<Pair<String, String>>) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
-            println("CONSULTANDO USUARIOS")
-            val resp = supabase?.from("usuarios")
-                ?.select(columns = Columns.list("tipo_usuario")) {
+            println("Actualizando $tabla")
+            supabase?.from(tabla)
+                ?.update({
+                    camposActualizar.forEach{(campoActualizar,valorActualizado)->
+                        set(campoActualizar, valorActualizado)
+                    }
+                })
+                {
                     filter {
                         and {
-                            Usuario::correo eq correo
-                            Usuario::contraseña eq contraseña
+                            filtros.forEach { (campoFiltro, filtro) ->
+                                eq(campoFiltro, filtro)
+                            }
                         }
                     }
-                }?.decodeSingle<Usuario>()
-
-            val tipo = resp?.tipo_usuario
-
-            println(tipo)
-
-            if (tipo != null) {
-                callback(tipo)
-            }
-
+                }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
-                // Maneja errores
-                println("Error: ${e.message}")
+                // Manejar errores
+                println("Error al actualizar $tabla: ${e.message}")
             }
         }
     }
+}
+
+fun consultaJSON(tabla: String, campos: String, filtros: List<Pair<String, String>>,
+                 callback: (String?,Boolean) -> Unit)
+{
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            println("Consultando $tabla")
+            val jsonResp = supabase?.from(tabla)
+                ?.select(columns = Columns.raw(campos)) {
+                    if (filtros.isNotEmpty()) {
+                        filter {
+                            and {
+                                filtros.forEach { (campoFiltro, filtro) ->
+                                    eq(campoFiltro, filtro)
+                                }
+                            }
+                        }
+                    }
+                }?.data
+
+            if (jsonResp != null) {
+                    callback(jsonResp,true)
+            } else {
+                withContext(Dispatchers.Main) {
+                    println("Error: La respuesta es nula.")
+                    callback(null, false) // Operación fallida
+                }
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                // Manejar errores
+                println("Error: ${e.message}")
+                callback(null, false) // Operación fallida
+            }
+        }
+    }
+}
+
+
+fun consulta(tabla: String, campos: String, filtros: List<Pair<String, String>>,
+             callback: (List<Map<String, Any?>>?,Boolean) -> Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            println("Consultando $tabla")
+            val jsonResp = supabase?.from(tabla)
+                ?.select(columns = Columns.raw(campos)) {
+                    if (filtros.isNotEmpty()) {
+                        filter {
+                            and {
+                                filtros.forEach { (campoFiltro, filtro) ->
+                                    eq(campoFiltro, filtro)
+                                }
+                            }
+                        }
+                    }
+                }?.data
+
+            if (jsonResp != null) {
+                val jsonElement = Json.parseToJsonElement(jsonResp)
+                if (jsonElement is List<*>) {
+                    val result = jsonElement.mapNotNull { element ->
+                        if (element is JsonObject) {
+                            element.toMap()
+                        } else {
+                            null
+                        }
+                    }
+                    callback(result,true)
+                } else {
+                    withContext(Dispatchers.Main) {
+                        println("Error: La respuesta no es una lista de objetos JSON.")
+                        callback(null, false) // Operación fallida
+                    }
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    println("Error: La respuesta es nula.")
+                    callback(null, false) // Operación fallida
+                }
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                // Manejar errores
+                println("Error: ${e.message}")
+                callback(null, false) // Operación fallida
+            }
+        }
+    }
+}
+
+fun JsonObject.toMap(): Map<String, Any?> {
+    val map = mutableMapOf<String, Any?>()
+    for (entry in this.entries) {
+        val value = when (val jsonElement = entry.value) {
+            is JsonPrimitive -> when {
+                jsonElement.isString -> jsonElement.content
+                jsonElement.booleanOrNull != null -> jsonElement.booleanOrNull
+                jsonElement.intOrNull != null -> jsonElement.intOrNull
+                jsonElement.floatOrNull != null -> jsonElement.floatOrNull
+                else -> null
+            }
+            else -> null
+        }
+        map[entry.key] = value
+    }
+    return map
 }

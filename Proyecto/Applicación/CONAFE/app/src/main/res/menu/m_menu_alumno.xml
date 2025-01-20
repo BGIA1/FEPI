@@ -4,7 +4,7 @@
         android:title="Perfil" />
     <item
         android:id="@+id/nav_status"
-        android:title="Estatus" />
+        android:title="Estatus de Asignación" />
     <item
         android:id="@+id/nav_subjects"
         android:title="Materias" />
@@ -17,4 +17,7 @@
     <item
         android:id="@+id/nav_calendar"
         android:title="Calendario" />
+    <item
+        android:id="@+id/nav_logout"
+        android:title="Cerrar sesión" />
 </menu>

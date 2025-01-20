@@ -1,10 +1,12 @@
 package com.example.conafe.figuraeducativa
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.conafe.R
+import com.example.conafe.consulta
 
 class AlumnosActivity : AppCompatActivity() {
 
@@ -16,17 +18,30 @@ class AlumnosActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.rvAlumnos)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Datos de ejemplo
-        val alumnos = listOf(
-            "ID: 1 - Juan Pérez",
-            "ID: 2 - Ana Gómez",
-            "ID: 3 - Carlos López",
-            "ID: 4 - María Hernández",
-            "ID: 5 - Pedro Martínez"
-        )
+        // Recuperar datos de sesión
+        val idUsuario = getSharedPreferences("MyAppPreferences", Context.MODE_PRIVATE).getString("id_usuario", null)
 
-        // Adaptador
-        val adapter = AlumnosAdapter(alumnos)
-        recyclerView.adapter = adapter
+        // Datos de ejemplo
+        if(idUsuario!=null){
+            consulta(
+                "Alumnos", "id, nombre",
+                filtros = listOf("id_fe" to idUsuario)
+            )
+            { resp, exito ->
+                if (resp != null && exito) {
+                    val alumnos: List<String> = resp.map {
+                        val id = it["id"].toString() as? String ?: ""
+                        val nombre = it["nombre"] as? String ?: ""
+                        "$id - $nombre"
+                    }
+                    runOnUiThread {
+                        println(alumnos)
+                        //Adaptador
+                        recyclerView.adapter = AlumnosAdapter(alumnos)
+                    }
+                }
+            }
+        }
     }
 }
+

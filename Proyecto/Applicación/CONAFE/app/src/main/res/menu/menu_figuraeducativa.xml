@@ -8,7 +8,7 @@
         android:title="Alumnos" />
     <item
         android:id="@+id/nav_materias"
-        android:title="Materias" />
+        android:title="Evaluar Alumnos" />
     <item
         android:id="@+id/nav_becas"
         android:title="Becas" />
@@ -17,6 +17,8 @@
         android:title="Depósitos" />
     <item
         android:id="@+id/nav_reportes"
-        android:title="Reportes" />
-
+        android:title="Reportes de Evaluación" />
+    <item
+        android:id="@+id/nav_logout_fe"
+        android:title="Cerrar sesión" />
 </menu>

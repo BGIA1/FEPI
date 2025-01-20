@@ -49,12 +49,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Delegación"
-                    android:textSize="18sp"
-                    android:padding="16dp"
                     android:background="@android:color/darker_gray"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white" />
+                    android:padding="16dp"
+                    android:text="Estado"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
             </TableRow>
 
             <!-- Fila de datos -->
@@ -76,10 +76,10 @@
                     android:padding="16dp" />
 
                 <TextView
-                    android:id="@+id/tvDelegacion"
+                    android:id="@+id/tvEstado"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Delegación"
+                    android:text="Estado"
                     android:textSize="16sp"
                     android:padding="16dp" />
             </TableRow>

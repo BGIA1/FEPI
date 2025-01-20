@@ -7,7 +7,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.conafe.R
-import com.example.conafe.aspirante.ProfileActivity
+import com.example.conafe.ProfileActivity
 import com.google.android.material.navigation.NavigationView
 
 class CoordinadorZonaActivity : AppCompatActivity() {

@@ -86,7 +86,6 @@
                     android:text="Superando las expectativas" />
 
             </RadioGroup>
-
             <!-- Comentarios -->
             <TextView
                 android:id="@+id/tvComentarios"
@@ -96,28 +95,24 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
-
             <EditText
                 android:id="@+id/etComentarios"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Escribe tus comentarios aquí"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"/>
 
             <Button
                 android:id="@+id/btnGuardarReporte"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Guardar"
                 android:backgroundTint="@color/colorPrimary"
+                android:text="Guardar"
                 android:textColor="@android:color/white"
-                app:layout_constraintTop_toBottomOf="@id/etComentarios"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
+                app:layout_constraintTop_toBottomOf="@id/etComentarios" />
         </LinearLayout>
-
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
