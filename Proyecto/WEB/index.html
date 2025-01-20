@@ -25,6 +25,23 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+
+            const tipoUsuario = localStorage.getItem('tipo_usuario');
+            const usuario = localStorage.getItem('usuario');
+
+            if (tipoUsuario && usuario) {
+                console.log('Sesión encontrada:', tipoUsuario, usuario);
+                if (tipoUsuario === "Delegado") {
+                    window.location.href = 'crear_convocatoria.html';
+                } else if (tipoUsuario === "JIAL") {
+                    window.location.href = 'JIAL/GIS/index.html';
+                } else if (tipoUsuario === "Coordinador") {
+                    window.location.href = 'coordinador.html';
+                }
+            } else {
+                console.log('No se encontró sesión activa');
+            }
+
             const dropdown = document.querySelector('.dropdown');
             const button = dropdown.querySelector('button');
             const convocatoriaLink = document.getElementById('convocatoria-link');

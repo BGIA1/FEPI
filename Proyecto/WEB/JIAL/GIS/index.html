@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIS</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    #container {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 90%;
+    }
+    #panelRuta {
+        flex: 1;
+        height: 100%;
+        font-size: 1.7em;
+        overflow-y: scroll;
+        padding: 10px;
+        box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+    }
+    #map {
+        flex: 3;
+        height: 100%;
+    }
+    #panelDistribucion {
+        flex: 1;
+        height: 100%;
+        font-size: 1.7em;
+        overflow-y: scroll;
+        padding: 10px;
+        box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+    }
+</style>
+<body>
+    <div id="container">
+        <div id="panelRuta">
+            <h2>Ruta de entrega de equipamiento</h2>
+            <ul id="rutaDistribucion"></ul>
+        </div>
+        <div id="map"></div>
+        <div id="panelDistribucion">
+            <h2>Distribución estimada</h2>
+            <ul id="listaDistribucion"></ul>
+        </div>
+    </div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js"></script>
+    <script src="calculoRuta.js"></script>
+    <script src="supaManager.js"></script>
+    <script src="estimacion.js"></script>
+    <script>
+        
+        // Inicializa el mapa
+        const map = L.map('map').setView([19.432608, -99.133209], 5); // Cambia las coordenadas
+
+        // Agrega capa base de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+          // Crear íconos personalizados
+          const inicioIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/1057/1057325.png', // Ícono de inicio
+            iconSize: [50, 50], // Tamaño del ícono
+            iconAnchor: [15, 30] // Punto donde se ancla el ícono
+        });
+
+    function GIS(lstEstados,lstArticulosEstado,medianaArticulos) {
+        [lstComunidades,rutaCoords,distanciaTotal]=trazarRuta(lstEstados,lstArticulosEstado,medianaArticulos)
+ 
+        // Ordenar la lista de estados de acuerdo a la ruta
+        lstEntregaEq = listaDistribucion.sort((a, b) => {
+        const keyA = Object.keys(a)[0];
+        const keyB = Object.keys(b)[0];
+        return lstComunidades.indexOf(keyA) - lstComunidades.indexOf(keyB);
+        });
+
+        updtPanelDist();
+        updtPanelRuta();
+        //console.log(lstEntregaEq)
+        
+        // Agrega el cálculo de rutas
+        L.Routing.control({
+            waypoints: rutaCoords,
+            routeWhileDragging: true, // Permitir arrastrar la ruta
+            showAlternatives: true, // Mostrar rutas alternativas
+            createMarker: function(i, waypoint, n) {
+              
+                // Cambiar el marcador según sea inicio o fin
+                if (i === 0) {
+                    return L.marker(waypoint.latLng, { icon: inicioIcon });
+                } else if (i === n - 1) {
+                    return L.marker(waypoint.latLng, { icon: inicioIcon });
+                } else {
+                    return L.marker(waypoint.latLng); // Marcadores intermedios (si los hubiera)
+                }
+            },
+            altLineOptions: {
+                styles: [
+                    { color: 'green', opacity: 0.5, weight: 5 }, // Estilo de las rutas alternas
+                    { color: 'orange', opacity: 0.5, weight: 5 } // Otro estilo de las rutas alternas
+                ]
+            },
+            lineOptions: {
+                styles: [{ color: 'blue', opacity: 0.7, weight: 5 }] // Ruta principal
+            }
+        }).addTo(map);
+         // Opcional: quitar el contenedor de instrucciones
+         document.querySelector('.leaflet-routing-container').style.display = 'none';
+         
+        }
+        		
+    // Llamar a la función desde index.html
+    const estados=["Aguascalientes","Baja California","Baja California Sur","Campeche","Chiapas","Chihuahua","Coahuila","Colima","Durango","Guanajuato","Guerrero","Hidalgo","Jalisco","México","Michoacán","Morelos","Nayarit","Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí","Veracruz","Yucatán","Zacatecas"]
+    const listaDistribucion=[]
+    año=2022
+
+    const promesas = estados.map(async (estado) => {
+        const datos = await obtenerDatos(estado);
+        if (datos) {
+            //console.log('Datos obtenidos:', datos); 
+            listaDistribucion.push({[estado]:estimar(año,datos)})
+        } else {
+            console.log('No se pudieron obtener los datos.');
+        }
+    });
+
+    Promise.all(promesas).then(() => {
+        let lstArticulosEstado=listaDistribucion.map((item) => {
+            const estado = Object.keys(item)[0];
+            const distribucion = item[estado];
+            articulos=Object.values(distribucion)
+            return {[estado]:articulos[9]}
+        });
+
+        // Ordenar la lista de estados
+        const listaArticulosOrdenada = lstArticulosEstado.sort((a, b) => {
+        const keyA = Object.keys(a)[0];
+        const keyB = Object.keys(b)[0];
+        return estados.indexOf(keyA) - estados.indexOf(keyB);
+        });
+
+        //console.log(listaArticulosOrdenada)
+
+        //Obtengo el promedio de articulos por estado
+        const mediaArticulos=lstArticulosEstado.reduce((acc, item) => {
+            const estado = Object.keys(item)[0];
+            const figurasEducativas = item[estado];
+            return acc + figurasEducativas;
+        }, 0) / lstArticulosEstado.length;
+
+       //console.log(Math.round(mediaArticulos))
+
+       //Obtengo la mediana de articulos por estado
+        const medianalstArticulos = mediana(lstArticulosEstado.map((item) => Object.values(item)[0]));
+        console.log("Mediana total articulos: ",medianalstArticulos);
+
+        estados.splice(0,0,...["","CDMX"])
+
+        lstArticulosEstado=lstArticulosEstado.map((item) => Object.values(item)[0])
+
+        lstArticulosEstado.splice(0,0,...[0,0])
+
+        //console.log(lstArticulosEstado)
+
+        GIS(estados,lstArticulosEstado,medianalstArticulos)        
+    });
+
+    function mediana(lista) {
+    // Ordenar la lista
+    const listaOrdenada = lista.sort((a, b) => a - b);
+    
+    // Calcular la posición de la mediana
+    const longitud = listaOrdenada.length;
+    const esPar = longitud % 2 === 0;
+    const mitad = Math.floor(longitud / 2);
+    
+    // Devolver la mediana
+    if (esPar) {
+        // Si la lista tiene un número par de elementos, la mediana es el promedio de los dos valores centrales
+        return (listaOrdenada[mitad - 1] + listaOrdenada[mitad]) / 2;
+    } else {
+        // Si la lista tiene un número impar de elementos, la mediana es el valor central
+        return listaOrdenada[mitad];
+    }
+}
+
+    function updtPanelRuta() {
+            const listaDistribucionElement = document.getElementById('rutaDistribucion');
+            listaDistribucionElement.innerHTML = '';
+
+            lstComunidades.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${item}</strong>`;
+                listaDistribucionElement.appendChild(li);
+            });
+
+            const hi = document.createElement('h2');
+            hi.innerHTML = `<strong>Distancia aproximada: ${distanciaTotal} km</strong>`;
+                listaDistribucionElement.appendChild(hi);
+        }
+
+    function updtPanelDist() {
+            const listaDistribucionElement = document.getElementById('listaDistribucion');
+            listaDistribucionElement.innerHTML = '';
+            listaDistribucion.forEach(item => {
+                const estado = Object.keys(item)[0];
+                const distribucion = item[estado];
+                articulos=Object.values(distribucion)
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${estado}:</strong>
+                <br>Figuras Educativas estimadas ${articulos[4]}
+                <br>Botas ${articulos[0]}
+                <br>Chamarra ligera ${articulos[1]}
+                <br>Tenis ${articulos[2]}
+                <br>Bolsa de Dormir ${articulos[3]}
+                <br>Gorra ${articulos[5]}
+                <br>Mochila ${articulos[6]}
+                <br>Chamarra polar ${articulos[7]}
+                <br>Playera tipo polo ${articulos[8]}
+                <br>Total de artículos ${articulos[9]}
+                `;
+                listaDistribucionElement.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>

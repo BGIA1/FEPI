@@ -123,7 +123,7 @@
     <!-- Barra de navegación -->
     <nav class="navbar">
         <h1>Crear Convocatoria</h1>
-        <a href="index.html">Regresar al Inicio</a>
+        <a href="index.html" id="logout">Cerrar Sesión</a>
     </nav>
 
     <!-- Contenido -->
@@ -151,6 +151,14 @@
     </div>
 
     <script>
+        document.getElementById('logout').addEventListener('click', () => {
+            // Eliminar los datos de sesión de localStorage
+            localStorage.removeItem('tipo_usuario');
+            localStorage.removeItem('usuario');
+            // Redirigir al usuario a la página de inicio de sesión
+            window.location.href = 'index.html';
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             const convocatoriaForm = document.getElementById('convocatoriaForm');
             const convocatoriasList = document.getElementById('convocatoriasList');
