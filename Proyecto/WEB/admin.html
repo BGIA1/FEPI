@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Usuarios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #1E88E5, #90CAF9);
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1E88E5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1rem;
+        }
+
+        table th, table td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #1E88E5;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        input[type="text"], input[type="email"], input[type="date"], input[type="tel"] {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        button {
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-update {
+            background-color: #FFC107;
+        }
+
+        .btn-update:hover {
+            background-color: #FFB300;
+        }
+
+        .btn-delete {
+            background-color: #E53935;
+        }
+
+        .btn-delete:hover {
+            background-color: #D32F2F;
+        }
+
+        .btn-save {
+            background-color: #4CAF50;
+        }
+
+        .btn-save:hover {
+            background-color: #43A047;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .add-row-button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: white;
+            background-color: #1E88E5;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-row-button:hover {
+            background-color: #1565C0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Administración de Usuarios</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Usuario</th>
+                    <th>Tipo de Usuario</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>CURP</th>
+                    <th>Estado</th>
+                    <th>Municipio</th>
+                    <th>Fecha de Nacimiento</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-usuarios">
+                <!-- Aquí se llenarán los datos dinámicamente -->
+            </tbody>
+        </table>
+        <div class="button-container">
+            <button class="add-row-button" onclick="agregarFila()">Agregar Nuevo Usuario</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const supabaseUrl = 'https://your-supabase-url.supabase.co';
+        const supabaseKey = 'your-supabase-key';
+        const supaClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Función para cargar usuarios desde la base de datos
+        async function cargarUsuarios() {
+            const { data, error } = await supaClient.from('Usuarios').select('*');
+
+            if (error) {
+                console.error('Error al cargar los usuarios:', error);
+                return;
+            }
+
+            const tablaUsuarios = document.getElementById('tabla-usuarios');
+            tablaUsuarios.innerHTML = ''; // Limpia la tabla
+
+            data.forEach(usuario => {
+                const fila = crearFilaEditable(usuario);
+                tablaUsuarios.appendChild(fila);
+            });
+        }
+
+        // Función para crear una nueva fila editable
+        function crearFilaEditable(usuario = {}) {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td><input type="text" value="${usuario.id_usuario || ''}" placeholder="ID" disabled></td>
+                <td><input type="text" value="${usuario.tipo_usuario || ''}" placeholder="Tipo de Usuario"></td>
+                <td><input type="text" value="${usuario.nombre || ''}" placeholder="Nombre"></td>
+                <td><input type="email" value="${usuario.correo || ''}" placeholder="Correo"></td>
+                <td><input type="tel" value="${usuario.telefono || ''}" placeholder="Teléfono"></td>
+                <td><input type="text" value="${usuario.curp || ''}" placeholder="CURP"></td>
+                <td><input type="text" value="${usuario.estado || ''}" placeholder="Estado"></td>
+                <td><input type="text" value="${usuario.municipio || ''}" placeholder="Municipio"></td>
+                <td><input type="date" value="${usuario.fecha_nacimiento || ''}" placeholder="Fecha de Nacimiento"></td>
+                <td>
+                    <button class="btn-save" onclick="guardarUsuario(this)">Guardar</button>
+                    ${usuario.id_usuario ? `<button class="btn-delete" onclick="eliminarUsuario('${usuario.id_usuario}', this)">Eliminar</button>` : ''}
+                </td>
+            `;
+            return fila;
+        }
+
+        // Función para agregar una nueva fila en blanco
+        function agregarFila() {
+            const tablaUsuarios = document.getElementById('tabla-usuarios');
+            const nuevaFila = crearFilaEditable();
+            tablaUsuarios.appendChild(nuevaFila);
+        }
+
+        // Función para guardar o actualizar un usuario
+        async function guardarUsuario(boton) {
+            const fila = boton.parentNode.parentNode;
+            const inputs = fila.querySelectorAll('input');
+            const usuario = {
+                tipo_usuario: inputs[1].value,
+                nombre: inputs[2].value,
+                correo: inputs[3].value,
+                telefono: inputs[4].value,
+                curp: inputs[5].value,
+                estado: inputs[6].value,
+                municipio: inputs[7].value,
+                fecha_nacimiento: inputs[8].value,
+            };
+
+            if (inputs[0].value) {
+                // Si tiene ID, actualiza el usuario
+                const { error } = await supaClient
+                    .from('Usuarios')
+                    .update(usuario)
+                    .eq('id_usuario', inputs[0].value);
+
+                if (error) {
+                    console.error('Error al actualizar el usuario:', error);
+                    alert('Error al actualizar el usuario.');
+                    return;
+                }
+
+                alert('Usuario actualizado con éxito.');
+            } else {
+                // Si no tiene ID, crea un nuevo usuario
+                const { data, error } = await supaClient
+                    .from('Usuarios')
+                    .insert([usuario]);
+
+                if (error) {
+                    console.error('Error al crear el usuario:', error);
+                    alert('Error al crear el usuario.');
+                    return;
+                }
+
+                alert('Usuario creado con éxito.');
+                inputs[0].value = data[0].id_usuario; // Asigna el ID generado
+            }
+        }
+
+        // Función para eliminar un usuario
+        async function eliminarUsuario(idUsuario, boton) {
+            const confirmacion = confirm('¿Estás seguro de que deseas eliminar este usuario?');
+            if (!confirmacion) return;
+
+            const { error } = await supaClient.from('Usuarios').delete().eq('id_usuario', idUsuario);
+
+            if (error) {
+                console.error('Error al eliminar el usuario:', error);
+                alert('Hubo un error al intentar eliminar al usuario.');
+            } else {
+                alert('Usuario eliminado con éxito.');
+                boton.parentNode.parentNode.remove(); // Elimina la fila de la tabla
+            }
+        }
+
+        // Cargar usuarios al iniciar la página
+        cargarUsuarios();
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a CON-FE</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="menu">
+        <h2>CON-FE</h2>
+        <div class="dropdown">
+            <button>Menú</button>
+            <div class="dropdown-content">
+                <a href="login.html">Login</a>
+                <a href="#" id="convocatoria-link">Convocatoria</a>
+                <a href="aceptados.html" id="accept-link" style="display: none;">Resultados</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="welcome">
+        <h1>Bienvenido a CON-FE</h1>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdown = document.querySelector('.dropdown');
+            const button = dropdown.querySelector('button');
+            const convocatoriaLink = document.getElementById('convocatoria-link');
+            const acceptLink = document.getElementById('accept-link');
+
+            // Verificar si "CONAFE 2025" está activa y validar fecha de inicio
+            const convocatorias = JSON.parse(localStorage.getItem('convocatorias')) || [];
+            const today = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
+            const conafeConvocatoria = convocatorias.find(convocatoria => 
+                convocatoria.name.toUpperCase() === 'CONAFE 2025' && new Date(convocatoria.startDate) <= new Date(today)
+            );
+
+            if (conafeConvocatoria) {
+                convocatoriaLink.href = 'convocatoria_abierta.html'; // Redirigir a convocatoria abierta
+            } else {
+                convocatoriaLink.href = '#'; // Enlace vacío si no hay convocatoria activa
+            }
+
+            // Verificar si los resultados ya fueron publicados
+            const resultsPublished = localStorage.getItem('resultsPublished');
+            if (resultsPublished === 'true') {
+                acceptLink.style.display = 'block'; // Mostrar enlace de "Aceptados"
+            } else {
+                acceptLink.style.display = 'none'; // Ocultar enlace si no están publicados
+            }
+
+            // Mostrar/ocultar menú desplegable
+            button.addEventListener('click', (e) => {
+                e.stopPropagation(); // Evita cerrar el menú al hacer clic en el botón
+                dropdown.classList.toggle('active');
+            });
+
+            document.addEventListener('click', () => {
+                dropdown.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

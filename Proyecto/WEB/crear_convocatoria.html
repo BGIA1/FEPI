@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Convocatoria</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #1E88E5, #90CAF9);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Barra de navegación */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1E88E5;
+            padding: 10px 20px;
+            color: white;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            margin-left: 10px;
+        }
+
+        .navbar a:hover {
+            color: #BBDEFB;
+        }
+
+        /* Contenedores */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .convocatoria-container, .list-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .convocatoria-container h1, .list-container h2 {
+            font-size: 1.8rem;
+            color: #1E88E5;
+            margin-bottom: 20px;
+        }
+
+        .convocatoria-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .convocatoria-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .convocatoria-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #1E88E5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .convocatoria-container button:hover {
+            background-color: #1565C0;
+        }
+
+        .list-container ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .list-container li {
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #1E88E5;
+            color: #333;
+        }
+
+        .list-container li span {
+            display: block;
+            font-size: 0.9rem;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar">
+        <h1>Crear Convocatoria</h1>
+        <a href="index.html">Regresar al Inicio</a>
+    </nav>
+
+    <!-- Contenido -->
+    <div class="container">
+        <div class="convocatoria-container">
+            <h1>Crear Convocatoria</h1>
+            <form id="convocatoriaForm">
+                <label for="name">Nombre de la convocatoria:</label>
+                <input type="text" id="name" placeholder="Nombre de la convocatoria" required>
+                <label for="startDate">Fecha de inicio:</label>
+                <input type="date" id="startDate" required>
+                <label for="endDate">Fecha de fin:</label>
+                <input type="date" id="endDate" required>
+                <button type="submit">Guardar Convocatoria</button>
+            </form>
+            <button id="deleteAll">Eliminar Todas las Convocatorias</button>
+        </div>
+
+        <div class="list-container">
+            <h2>Convocatorias Guardadas</h2>
+            <ul id="convocatoriasList">
+                <!-- Lista dinámica -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const convocatoriaForm = document.getElementById('convocatoriaForm');
+            const convocatoriasList = document.getElementById('convocatoriasList');
+            const deleteAllButton = document.getElementById('deleteAll');
+
+            // Cargar convocatorias desde localStorage
+            const loadConvocatorias = () => {
+                const convocatorias = JSON.parse(localStorage.getItem('convocatorias')) || [];
+                convocatoriasList.innerHTML = convocatorias.map(convocatoria => `
+                    <li>
+                        <strong>${convocatoria.name}</strong>
+                        <span>Inicio: ${convocatoria.startDate}</span>
+                        <span>Fin: ${convocatoria.endDate}</span>
+                    </li>
+                `).join('');
+            };
+
+            // Guardar convocatoria
+            convocatoriaForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('name').value;
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+
+                if (new Date(startDate) > new Date(endDate)) {
+                    alert('La fecha de inicio no puede ser mayor que la fecha de fin.');
+                    return;
+                }
+
+                const nuevaConvocatoria = { name, startDate, endDate };
+
+                const convocatorias = JSON.parse(localStorage.getItem('convocatorias')) || [];
+                convocatorias.push(nuevaConvocatoria);
+
+                localStorage.setItem('convocatorias', JSON.stringify(convocatorias));
+
+                if (name.toUpperCase() === 'CONAFE 2025') {
+                    localStorage.setItem('convocatoria_activa', 'CONAFE 2025');
+                }
+
+                loadConvocatorias();
+                convocatoriaForm.reset();
+            });
+
+            // Eliminar todas las convocatorias
+            deleteAllButton.addEventListener('click', () => {
+                if (confirm('¿Estás seguro de que deseas eliminar todas las convocatorias?')) {
+                    localStorage.removeItem('convocatorias');
+                    localStorage.removeItem('convocatoria_activa');
+                    loadConvocatorias();
+                    alert('Todas las convocatorias han sido eliminadas.');
+                }
+            });
+
+            loadConvocatorias();
+        });
+    </script>
+</body>
+</html>

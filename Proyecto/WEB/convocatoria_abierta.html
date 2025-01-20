@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convocatoria Abierta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #1E88E5, #90CAF9);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .message-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .message-container h1 {
+            font-size: 2rem;
+            color: #1E88E5;
+            margin-bottom: 20px;
+        }
+
+        .message-container p {
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .message-container button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            background-color: #1E88E5;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .message-container button:hover {
+            background-color: #1565C0;
+        }
+    </style>
+</head>
+<body>
+    <div class="message-container">
+        <h1>Bienvenido Aspirante</h1>
+        <p>La convocatoria <strong>CONAFE 2025</strong> ha sido abierta. ¡Prepárate para participar!</p>
+        <button onclick="redirigirFormulario()">Ir al Formulario</button>
+    </div>
+
+    <script>
+        function redirigirFormulario() {
+            window.location.href = 'formulario.html'; // Redirige a la página de formulario
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignar Capacitador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #42A5F5, #90CAF9);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1E88E5;
+            padding: 10px 20px;
+            color: white;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .container {
+            max-width: 95%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1E88E5;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        table th, table td {
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #1E88E5;
+            color: white;
+        }
+
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .btn-assign {
+            background-color: #4CAF50;
+        }
+
+        .btn-assign:hover {
+            background-color: #45A049;
+        }
+
+        .btn-publish {
+            background-color: #FF9800;
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1rem;
+        }
+
+        .btn-publish:hover {
+            background-color: #F57C00;
+        }
+
+        .btn-remove {
+            background-color: #F44336;
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1rem;
+        }
+
+        .btn-remove:hover {
+            background-color: #D32F2F;
+        }
+
+        select {
+            width: 100%;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Asignar Capacitador</h1>
+        <a href="coordinador.html" style="color: white; text-decoration: none;">Regresar</a>
+    </nav>
+
+    <div class="container">
+        <h2>Usuarios Aceptados</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>CURP</th>
+                        <th>Estado</th>
+                        <th>Municipio</th>
+                        <th>Capacitador</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="usuariosTableBody">
+                    <!-- Filas dinámicas -->
+                </tbody>
+            </table>
+        </div>
+        <button class="btn-publish" id="publishResultsButton">PUBLICAR RESULTADOS</button>
+        <button class="btn-remove" id="removeResultsButton">ELIMINAR PUBLICACIÓN</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const usuariosTableBody = document.getElementById('usuariosTableBody');
+            const publishResultsButton = document.getElementById('publishResultsButton');
+            const removeResultsButton = document.getElementById('removeResultsButton');
+
+            // Simulación de datos desde la BD
+            const usuarios = [
+                { id: 1, nombre: "Juan Pérez", correo: "juan@example.com", telefono: "555-1234", curp: "CURP123", estado: "CDMX", municipio: "Coyoacán" },
+                { id: 2, nombre: "María López", correo: "maria@example.com", telefono: "555-5678", curp: "CURP456", estado: "EdoMex", municipio: "Naucalpan" },
+                { id: 3, nombre: "Carlos Ruiz", correo: "carlos@example.com", telefono: "555-9101", curp: "CURP789", estado: "Jalisco", municipio: "Guadalajara" }
+            ];
+
+            // Simulación de capacitadores
+            const capacitadores = ["Capacitador A", "Capacitador B", "Capacitador C"];
+
+            usuarios.forEach(usuario => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${usuario.id}</td>
+                    <td>${usuario.nombre}</td>
+                    <td>${usuario.correo}</td>
+                    <td>${usuario.telefono}</td>
+                    <td>${usuario.curp}</td>
+                    <td>${usuario.estado}</td>
+                    <td>${usuario.municipio}</td>
+                    <td>
+                        <select>
+                            <option value="">Seleccione un capacitador</option>
+                            ${capacitadores.map(cap => `<option value="${cap}">${cap}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td><button class="btn-assign" onclick="asignarCapacitador(${usuario.id})">Asignar</button></td>
+                `;
+
+                usuariosTableBody.appendChild(row);
+            });
+
+            // Publicar resultados
+            publishResultsButton.addEventListener('click', () => {
+                alert('¡Resultados publicados! Ahora los aspirantes aceptados son visibles.');
+                localStorage.setItem('resultsPublished', 'true');
+                window.location.href = 'index.html'; // Redirige a la página principal tras publicar
+            });
+
+            // Eliminar publicación de resultados
+            removeResultsButton.addEventListener('click', () => {
+                const confirmation = confirm('¿Estás seguro de que deseas eliminar la publicación de los resultados?');
+                if (confirmation) {
+                    localStorage.removeItem('resultsPublished');
+                    alert('La publicación de los resultados ha sido eliminada.');
+                }
+            });
+        });
+
+        function asignarCapacitador(userId) {
+            const row = document.querySelector(`tr[data-id="${userId}"]`);
+            const capacitadorSelect = row.querySelector('select');
+            const capacitador = capacitadorSelect.value;
+
+            if (!capacitador) {
+                alert('Por favor seleccione un capacitador.');
+                return;
+            }
+
+            console.log(`Asignando capacitador ${capacitador} al usuario con ID ${userId}`);
+            alert(`Capacitador ${capacitador} asignado al usuario con ID ${userId}`);
+        }
+    </script>
+</body>
+</html>
