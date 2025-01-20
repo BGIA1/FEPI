@@ -22,7 +22,6 @@
             background-color: #1E88E5;
             padding: 10px 20px;
             color: white;
-            position: relative;
         }
 
         .navbar h1 {
@@ -48,7 +47,6 @@
             color: white;
             text-decoration: none;
             padding: 8px 15px;
-            display: inline-block;
             border-radius: 5px;
             transition: background-color 0.3s;
         }
@@ -108,7 +106,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1200px;
+            min-width: 1400px;
         }
 
         table th, table td {
@@ -132,19 +130,27 @@
         }
 
         .btn-accept {
-            background-color: #4CAF50;
+            background-color: #1E88E5;
         }
 
         .btn-accept:hover {
-            background-color: #45A049;
+            background-color: #1565C0;
         }
 
         .btn-reject {
-            background-color: #F44336;
+            background-color: #42A5F5;
         }
 
         .btn-reject:hover {
-            background-color: #D32F2F;
+            background-color: #2196F3;
+        }
+
+        .btn-promote {
+            background-color: #64B5F6;
+        }
+
+        .btn-promote:hover {
+            background-color: #42A5F5;
         }
     </style>
 </head>
@@ -154,10 +160,10 @@
         <h1>Coordinador - CONAFE</h1>
         <ul>
             <li id="menu">
-                <a href="#">Opciones</a>
+                <a href="#">Menu</a>
                 <div class="dropdown">
-                    <a href="#aspirantes">Aspirantes</a>
                     <a href="asignarcapacitador.html">Asignar Capacitador</a>
+                    <a href="visitas.html">Visitas</a>
                     <a href="login.html">Login</a>
                 </div>
             </li>
@@ -179,17 +185,10 @@
                         <th>CURP</th>
                         <th>Estado</th>
                         <th>Municipio</th>
-                        <th>Fecha de Nacimiento</th>
-                        <th>Nacionalidad</th>
-                        <th>Estudios</th>
-                        <th>Escolaridad</th>
-                        <th>Lengua Indígena</th>
-                        <th>Calzado</th>
-                        <th>Camisa</th>
-                        <th>Pantalón</th>
-                        <th>Cuenta</th>
                         <th>Estatus</th>
-                        <th>Acciones</th>
+                        <th>Estatus de Promoción</th>
+                        <th>Aceptar/Rechazar</th>
+                        <th>Promover</th>
                     </tr>
                 </thead>
                 <tbody id="aspirantesTableBody">
@@ -212,9 +211,51 @@
             document.addEventListener('click', () => {
                 menu.classList.remove('active');
             });
+
+            // Simulación de datos para la tabla
+            const aspirantesTableBody = document.getElementById('aspirantesTableBody');
+            const aspirantes = [
+                { id: 1, nombre: "Juan Pérez", correo: "juan@example.com", telefono: "555-1234", curp: "CURP123", estado: "CDMX", municipio: "Coyoacán", estatus: "Pendiente", estatusPromocion: "NA" },
+                { id: 2, nombre: "María López", correo: "maria@example.com", telefono: "555-5678", curp: "CURP456", estado: "EdoMex", municipio: "Naucalpan", estatus: "Pendiente", estatusPromocion: "NA" },
+            ];
+
+            aspirantes.forEach(aspirante => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${aspirante.id}</td>
+                    <td>${aspirante.nombre}</td>
+                    <td>${aspirante.correo}</td>
+                    <td>${aspirante.telefono}</td>
+                    <td>${aspirante.curp}</td>
+                    <td>${aspirante.estado}</td>
+                    <td>${aspirante.municipio}</td>
+                    <td class="estatus">${aspirante.estatus}</td>
+                    <td class="estatus-promocion">${aspirante.estatusPromocion}</td>
+                    <td>
+                        <button class="btn-accept" onclick="actualizarEstatus(${aspirante.id}, 'Aceptado')">Aceptar</button>
+                        <button class="btn-reject" onclick="actualizarEstatus(${aspirante.id}, 'Rechazado')">Rechazar</button>
+                    </td>
+                    <td>
+                        <button class="btn-promote" onclick="promover(${aspirante.id})">Promover</button>
+                    </td>
+                `;
+                aspirantesTableBody.appendChild(row);
+            });
         });
 
-        // Aquí puedes agregar las funciones de Supabase u otros scripts necesarios.
+        // Función para actualizar el estatus del aspirante
+        function actualizarEstatus(id, nuevoEstatus) {
+            const row = document.querySelector(`tr[data-id="${id}"]`);
+            const estatusCell = row.querySelector('.estatus');
+            estatusCell.textContent = nuevoEstatus;
+        }
+
+        // Función para promover a un aspirante
+        function promover(id) {
+            const row = document.querySelector(`tr[data-id="${id}"]`);
+            const estatusPromocionCell = row.querySelector('.estatus-promocion');
+            estatusPromocionCell.textContent = "Promovido";
+        }
     </script>
 </body>
 </html>
