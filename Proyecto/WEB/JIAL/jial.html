@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIS</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(to bottom right, #42A5F5, #90CAF9);
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+    }
+           /* Barra de navegación */
+           .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1E88E5;
+            padding: 10px 10px;
+            color: white;
+            position: relative;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar ul li {
+            position: relative;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .navbar ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 10px;
+            display: inline-block;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar ul li a:hover {
+            background-color: #1565C0;
+        }
+
+        .navbar ul li .dropdown {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            background-color: #1976D2;
+            border-radius: 5px;
+            overflow: hidden;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar ul li.active .dropdown {
+            display: block;
+        }
+
+        .navbar ul li .dropdown a {
+            padding: 5px;
+            display: block;
+            white-space: nowrap;
+            color: white;
+        }
+
+        .navbar ul li .dropdown a:hover {
+            background-color: #1565C0;
+        }
+        #container {
+            margin-top: 10px; /* Ajustar según la altura de la barra de navegación */
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 10px;
+            padding: 10px;
+        }
+        #panelRuta, #panelDistribucion {
+            background-color: #0c7eff9d;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            height: 650px;
+            overflow-y: auto;
+        }
+        #map {
+            height: 650px;
+            background-color: #e5e5e5;
+            grid-column: 2;
+        }
+
+        .confirm-button {
+            display: block;
+            margin: 18px auto 0; /* Centrar el botón y agregar margen superior */
+            padding: 10px 18px;
+            font-size: 1em; /* Letra grande */
+            background-color: #1a60a19d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .confirm-button:hover {
+            background-color: #10b7ff;
+        }
+
+</style>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar">
+        <h1>Jefe de Información y Apoyo Logístico</h1>
+        <h2>GIS</h2>
+        <ul>
+            <li><a href="../index.html" id="logout">Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+    <div id="container">
+        <div id="panelRuta">
+            <h2>Ruta de entrega de equipamiento</h2>
+            <ul id="rutaDistribucion"></ul>
+        </div>
+        <div id="map"></div>
+        <div id="panelDistribucion">
+            <h2>Distribución estimada</h2>
+            <ul id="listaDistribucion"></ul>
+        </div>
+    </div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js"></script>
+    <script src="calculoRuta.js"></script>
+    <script src="supaManager.js"></script>
+    <script src="estimacion.js"></script>
+    <script>
+        document.getElementById('logout').addEventListener('click', () => {
+            // Eliminar los datos de sesión de localStorage
+            localStorage.removeItem('tipo_usuario');
+            localStorage.removeItem('usuario');
+            // Redirigir al usuario a la página de inicio de sesión
+            window.location.href = '../index.html';
+        });
+        
+        // Inicializa el mapa
+        const map = L.map('map').setView([19.432608, -99.133209], 5); // Cambia las coordenadas
+
+        // Agrega capa base de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+          // Crear íconos personalizados
+          const inicioIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/1057/1057325.png', // Ícono de inicio
+            iconSize: [50, 50], // Tamaño del ícono
+            iconAnchor: [15, 30] // Punto donde se ancla el ícono
+        });
+
+    function GIS(lstEstados,lstArticulosEstado,medianaArticulos) {
+        [lstComunidades,rutaCoords,distanciaTotal]=trazarRuta(lstEstados,lstArticulosEstado,medianaArticulos)
+ 
+        // Ordenar la lista de estados de acuerdo a la ruta
+        lstEntregaEq = listaDistribucion.sort((a, b) => {
+        const keyA = Object.keys(a)[0];
+        const keyB = Object.keys(b)[0];
+        return lstComunidades.indexOf(keyA) - lstComunidades.indexOf(keyB);
+        });
+
+        updtPanelDist();
+        updtPanelRuta();
+        //console.log(lstEntregaEq)
+        
+        // Agrega el cálculo de rutas
+        L.Routing.control({
+            waypoints: rutaCoords,
+            routeWhileDragging: true, // Permitir arrastrar la ruta
+            showAlternatives: true, // Mostrar rutas alternativas
+            createMarker: function(i, waypoint, n) {
+              
+                // Cambiar el marcador según sea inicio o fin
+                if (i === 0) {
+                    return L.marker(waypoint.latLng, { icon: inicioIcon });
+                } else if (i === n - 1) {
+                    return L.marker(waypoint.latLng, { icon: inicioIcon });
+                } else {
+                    return L.marker(waypoint.latLng); // Marcadores intermedios (si los hubiera)
+                }
+            },
+            altLineOptions: {
+                styles: [
+                    { color: 'green', opacity: 0.5, weight: 5 }, // Estilo de las rutas alternas
+                    { color: 'orange', opacity: 0.5, weight: 5 } // Otro estilo de las rutas alternas
+                ]
+            },
+            lineOptions: {
+                styles: [{ color: 'blue', opacity: 0.7, weight: 5 }] // Ruta principal
+            }
+        }).addTo(map);
+         // Opcional: quitar el contenedor de instrucciones
+         document.querySelector('.leaflet-routing-container').style.display = 'none';
+         
+        }
+        		
+    // Llamar a la función desde index.html
+    const estados=["Aguascalientes","Baja California","Baja California Sur","Campeche","Chiapas","Chihuahua","Coahuila","Colima","Durango","Guanajuato","Guerrero","Hidalgo","Jalisco","México","Michoacán","Morelos","Nayarit","Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí","Veracruz","Yucatán","Zacatecas"]
+    const listaDistribucion=[]
+    año=2025
+    
+    const promesas = estados.map(async (estado) => {
+        const datos = await obtenerDatos(estado)
+        if (datos) {
+            listaDistribucion.push({[estado]:estimar(año,datos)})
+        } else {
+            console.log('No se pudieron obtener los datos.');
+        }
+    });
+
+    Promise.all(promesas).then(() => {
+        let lstArticulosEstado=listaDistribucion.map((item) => {
+            const estado = Object.keys(item)[0];
+            const distribucion = item[estado];
+            articulos=Object.values(distribucion)
+            return {[estado]:articulos[9]}
+        });
+
+
+        // Ordenar la lista de estados
+        const listaArticulosOrdenada = lstArticulosEstado.sort((a, b) => {
+        const keyA = Object.keys(a)[0];
+        const keyB = Object.keys(b)[0];
+        return estados.indexOf(keyA) - estados.indexOf(keyB);
+        });
+
+        //console.log(listaArticulosOrdenada)
+
+        //Obtengo el promedio de articulos por estado
+        const mediaArticulos=lstArticulosEstado.reduce((acc, item) => {
+            const estado = Object.keys(item)[0];
+            const figurasEducativas = item[estado];
+            return acc + figurasEducativas;
+        }, 0) / lstArticulosEstado.length;
+
+       //console.log(Math.round(mediaArticulos))
+
+       //console.log(lstArticulosEstado)
+
+       //Obtengo la mediana de articulos por estado
+        const medianalstArticulos = mediana(lstArticulosEstado.map((item) => Object.values(item)[0]));
+        console.log("Mediana total articulos: ",medianalstArticulos);
+
+        estados.splice(0,0,...["","CDMX"])
+
+        lstArticulosEstado=lstArticulosEstado.map((item) => Object.values(item)[0])
+
+        lstArticulosEstado.splice(0,0,...[0,0])
+
+        //console.log(lstArticulosEstado)
+
+        GIS(estados,lstArticulosEstado,medianalstArticulos)  
+           
+    });
+    
+    function mediana(lista) {
+    // Ordenar la lista
+    const listaOrdenada = lista.sort((a, b) => a - b);
+    
+    // Calcular la posición de la mediana
+    const longitud = listaOrdenada.length;
+    const esPar = longitud % 2 === 0;
+    const mitad = Math.floor(longitud / 2);
+    
+    // Devolver la mediana
+    if (esPar) {
+        // Si la lista tiene un número par de elementos, la mediana es el promedio de los dos valores centrales
+        return (listaOrdenada[mitad - 1] + listaOrdenada[mitad]) / 2;
+    } else {
+        // Si la lista tiene un número impar de elementos, la mediana es el valor central
+        return listaOrdenada[mitad];
+    }
+}
+
+    function updtPanelRuta() {
+            const listaDistribucionElement = document.getElementById('rutaDistribucion');
+            listaDistribucionElement.innerHTML = '';
+
+            lstComunidades.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${item}</strong>`;
+                listaDistribucionElement.appendChild(li);
+            });
+
+            const hi = document.createElement('h3');
+            hi.innerHTML = `<strong>Distancia aproximada: ${distanciaTotal} km</strong>`;
+            listaDistribucionElement.appendChild(hi);
+
+        }
+    
+    function updtPanelDist() {
+            const listaDistribucionElement = document.getElementById('listaDistribucion');
+            listaDistribucionElement.innerHTML = '';
+            listaDistribucion.forEach(item => {
+                const estado = Object.keys(item)[0];
+                const distribucion = item[estado];
+                articulos=Object.values(distribucion)
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${estado}:</strong>
+                <br>Figuras Educativas estimadas ${articulos[4]}
+                <br>Botas ${articulos[0]}
+                <br>Chamarra ligera ${articulos[1]}
+                <br>Tenis ${articulos[2]}
+                <br>Bolsa de Dormir ${articulos[3]}
+                <br>Gorra ${articulos[5]}
+                <br>Mochila ${articulos[6]}
+                <br>Chamarra polar ${articulos[7]}
+                <br>Playera tipo polo ${articulos[8]}
+                <br>Total de artículos ${articulos[9]}
+                `;
+                listaDistribucionElement.appendChild(li);
+            });
+
+            let b=0
+                   // Crear el botón de confirmación
+             const confirmButton = document.createElement('button');
+            confirmButton.textContent = 'Confirmar Envío de Recursos';
+            confirmButton.className = 'confirm-button';
+            confirmButton.addEventListener('click', () => {
+                const periodo=año.toString()+"-"+(año+1).toString()
+                listaDistribucion.forEach(item => {
+                const estado = Object.keys(item)[0];
+                const distribucion = item[estado];
+                articulos=Object.values(distribucion)
+                registrarEnvio(periodo,estado,articulos[5],articulos[6],articulos[0],articulos[2],articulos[9],articulos[4],articulos[8],articulos[7],articulos[1],articulos[3])
+                .then((respuesta) => {
+                    if(b==0){
+                        b=1
+                        alert(respuesta.message)
+                    }
+                })
+            });
+            });
+
+            // Agregar el botón al panel
+            panelDistribucion.appendChild(confirmButton);
+        }
+    </script>
+</body>
+</html>

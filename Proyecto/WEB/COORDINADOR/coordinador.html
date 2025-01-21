@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <title>Gestión de Aspirantes</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #42A5F5, #90CAF9);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Barra de navegación */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1E88E5;
+            padding: 10px 20px;
+            color: white;
+            position: relative;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar ul li {
+            position: relative;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+
+        .navbar ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            display: inline-block;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar ul li a:hover {
+            background-color: #1565C0;
+        }
+
+        .navbar ul li .dropdown {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            background-color: #1976D2;
+            border-radius: 5px;
+            overflow: hidden;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar ul li.active .dropdown {
+            display: block;
+        }
+
+        .navbar ul li .dropdown a {
+            padding: 10px;
+            display: block;
+            white-space: nowrap;
+            color: white;
+        }
+
+        .navbar ul li .dropdown a:hover {
+            background-color: #1565C0;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 95%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1E88E5;
+        }
+
+        /* Tabla */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+        table th, table td {
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #1E88E5;
+            color: white;
+        }
+
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #1e4ce5;
+            margin: 5px;
+        }
+
+        .btn-accept {
+            background-color: #4CAF50;
+        }
+
+        .btn-accept:hover {
+            background-color: #45A049;
+        }
+
+        .btn-reject {
+            background-color: #F44336;
+        }
+
+        .btn-reject:hover {
+            background-color: #D32F2F;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar">
+        <h1>Coordinador - CONAFE</h1>
+        <ul>
+            <li id="menu">
+                <a href="#">Opciones</a>
+                <div class="dropdown">
+                    <a href="visitas.html">Agendar Visitas</a>
+                    <a href="asignarcapacitador.html">Asignar Capacitador</a>
+                    <!--<a href="login.html">Login</a>-->
+                </div>
+            </li>
+            <li><a href="../index.html" id="logout">Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+
+    <!-- Contenedor de la tabla -->
+    <div class="container">
+        <h2>Gestión de Aspirantes</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>CURP</th>
+                        <th>Estado</th>
+                        <th>Municipio</th>
+                        <th>Edad</th>
+                        <th>Nacionalidad</th>
+                        <th>Estudios</th>
+                        <th>Escolaridad</th>
+                        <th>Lengua Indígena</th>
+                        <th>Estatus</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="aspirantesTableBody">
+                    <!-- Filas dinámicas -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://cqvlrkpsafdazotfprgz.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxdmxya3BzYWZkYXpvdGZwcmd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYzMDUwODUsImV4cCI6MjA1MTg4MTA4NX0.s0HUZhvxsPZxWvv2aAsz5RF_yPmUPdauSbEktDGGE6Y';
+        const supaClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function rechazarAspirante(aspirante) {
+            const { data: dataUsuario, error }=await supaClient
+            .from('Aspirantes')
+            .delete()
+            .eq('id_usuario', aspirante)
+            .select()
+            if (error) {
+                console.error('Error al rechazar aspirante', error);
+            } 
+            else {
+                console.log('Aspirante rechazado', aspirante);
+            }
+        }
+
+        async function aceptarAspirante(aspirante) {
+            const { data: dataUsuario, error }=await supaClient
+            .from('Aspirantes')
+            .update({estatus: 'Aceptado'})
+            .eq('id_usuario', aspirante)
+            .select()
+            if (error) {
+                console.error('Error al aceptar aspirante', error);
+            } 
+            else {
+                console.log('Aspirante aceptado', aspirante);
+            }
+        }
+
+        async function consultarAspirantes() {
+            const { data: dataUsuario, error } = await supaClient
+                .from('Aspirantes')
+                .select(`
+                id_usuario,
+                nacionalidad,
+                estudios_concluidos,
+                nivel_escolaridad,
+                lengua_indigena,
+                estatus,
+                usuarios:Usuarios!id_usuario 
+                (
+                nombre,
+                correo,
+                telefono,
+                curp,
+                estado,
+                municipio,
+                fecha_nacimiento
+                )
+                `)
+                .eq('estatus', 'Pendiente');
+
+            if (error) {
+                console.error('Error al consultar aspirantes', error);
+                return { success: false, message: 'Error al consultar aspirantes', error };
+            } else if (dataUsuario.length > 0) {
+                console.log('Aspirantes consultados con éxito:', dataUsuario);
+                
+                const tableBody = document.getElementById('aspirantesTableBody');
+                tableBody.innerHTML = ''; // Limpiar cualquier contenido previo
+
+                dataUsuario.forEach(aspirante => {
+                    const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${aspirante.id_usuario}</td>
+                <td>${aspirante.usuarios.nombre}</td>
+                <td>${aspirante.usuarios.correo}</td>
+                <td>${aspirante.usuarios.telefono}</td>
+                <td>${aspirante.usuarios.curp}</td>
+                <td>${aspirante.usuarios.estado}</td>
+                <td>${aspirante.usuarios.municipio}</td>
+                <td>${calculateAge(aspirante.usuarios.fecha_nacimiento)}</td>
+                <td>${aspirante.nacionalidad}</td>
+                <td>${aspirante.estudios}</td>
+                <td>${aspirante.escolaridad}</td>
+                <td>${aspirante.lengua_indigena}</td>
+                <td>${aspirante.estatus}</td>
+                <td>
+                    <!-- Aquí puedes agregar botones de acción, como editar o eliminar -->
+                    ${aspirante.estatus === 'Pendiente' ? `<button onclick="aceptarAspirante('${aspirante.id_usuario}')">Aceptar Aspirante</button>` : ''}
+                    ${aspirante.estatus === 'Pendiente' ? `<button onclick="rechazar('${aspirante.id_usuario}')">Rechazar Aspirante</button>` : ''}    
+                </td>
+            `;
+            tableBody.appendChild(row);
+            });
+                //return { success: true, dataUsuario[0]["tipo_usuario"] };
+            } else {
+                console.log('Usuario o contraseña incorrectos');
+                return { success: false, message: 'Usuario o contraseña incorrectos' };
+            }
+        }
+
+        document.getElementById('logout').addEventListener('click', () => {
+            // Eliminar los datos de sesión de localStorage
+            localStorage.removeItem('tipo_usuario');
+            localStorage.removeItem('usuario');
+            // Redirigir al usuario a la página de inicio de sesión
+            window.location.href = '../index.html';
+        });
+        // Menú desplegable con persistencia
+        document.addEventListener('DOMContentLoaded', () => {
+            const menu = document.getElementById('menu');
+
+            consultarAspirantes()
+
+            menu.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.toggle('active');
+            });
+
+            document.addEventListener('click', () => {
+                menu.classList.remove('active');
+            });
+        });
+
+        function calculateAge(birthDate) {
+            const birth = new Date(birthDate);
+            const today = new Date();
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDifference = today.getMonth() - birth.getMonth();
+            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            return age;
+        }
+        // Aquí puedes agregar las funciones de Supabase u otros scripts necesarios.
+    </script>
+</body>
+</html>

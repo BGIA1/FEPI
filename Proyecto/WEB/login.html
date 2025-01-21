@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Delegado Estatal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
@@ -99,6 +100,98 @@
     </style>
 </head>
 <body>
+    <script>
+        const supabaseUrl = 'https://cqvlrkpsafdazotfprgz.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxdmxya3BzYWZkYXpvdGZwcmd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYzMDUwODUsImV4cCI6MjA1MTg4MTA4NX0.s0HUZhvxsPZxWvv2aAsz5RF_yPmUPdauSbEktDGGE6Y';
+        const supaClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function login(usuario, contraseña) {
+            console.log(usuario,contraseña)
+            const { data: dataUsuario, error } = await supaClient
+                .from('Usuarios')
+                .select("tipo_usuario")
+                .eq('id_usuario', usuario)
+                .eq('contraseña', contraseña);
+
+            if (error) {
+                console.error('Error al consultar usuario', error);
+                return { success: false, message: 'Error al consultar usuario', error };
+            } else if (dataUsuario.length > 0) {
+                console.log('Usuario consultado con éxito:', dataUsuario[0]["tipo_usuario"]);
+                return { success: true, tipo_usuario: dataUsuario[0]["tipo_usuario"] };
+            } else {
+                console.log('Usuario o contraseña incorrectos');
+                return { success: false, message: 'Usuario o contraseña incorrectos' };
+            }
+        }
+
+        async function enviarFormulario() {
+            // Obtener los valores de los campos del formulario
+            const nombre = document.getElementById('nombre').value.trim();
+            const fechaNacimiento = document.getElementById('fecha_nacimiento').value.trim();
+            const telefono = document.getElementById('telefono').value.trim();
+            const correo = document.getElementById('correo').value.trim();
+            const curp = document.getElementById('curp').value.trim();
+            const nacionalidad = document.getElementById('nacionalidad').value.trim();
+            const estudios_concluidos = document.getElementById('estudios_concluidos').value.trim();
+            const nivel_escolaridad = document.getElementById('grado_estudios').value.trim() || null;
+            const lengua_indigena = document.getElementById('lengua_indigena').value.trim() || null;
+            const calzado = document.getElementById('calzado').value.trim();
+            const talla_camisa = document.getElementById('talla_camisa').value.trim();
+            const talla_pantalon = document.getElementById('talla_pantalon').value.trim();
+            const estado = document.getElementById('estado').value.trim();
+            const municipio = document.getElementById('municipio').value.trim();
+            const cuenta_bancaria = document.getElementById('cuenta_bancaria').value.trim();
+    
+            /*
+            // Validar que todos los campos obligatorios estén llenos
+            if (!nombre || !fechaNacimiento || !telefono || !correo || !curp || !nacionalidad || !estudios_concluidos || !calzado || !talla_camisa || !talla_pantalon || !estado || !municipio || !cuenta_bancaria) {
+                alert('Necesitas llenar todos los campos para continuar');
+                return;
+            }
+            */
+
+            // Generar usuario y contraseña
+            const anioNacimiento = fechaNacimiento.split('-')[0]; // Asume formato YYYY-MM-DD
+            const usuario = `${curp.substring(0, 4)}${anioNacimiento}`.toLowerCase(); // Primeras 4 letras + año
+            const contrasena = "123"//curp; // CURP completo
+    
+            // Crear un objeto con los datos a enviar
+            const datoUsuario = {
+                id_usuario:usuario,
+                tipo_usuario:"Aspirante",
+                nombre:nombre,
+                contraseña:contrasena,
+                correo:correo,
+                telefono:telefono,
+                curp:curp,
+                estado:estado,
+                fecha_nacimiento:fechaNacimiento,
+                municipio:municipio
+            }
+            
+            const datosAspirante = {
+                id_usuario:usuario,
+                nacionalidad:nacionalidad,
+                estudios_concluidos:estudios_concluidos,
+                nivel_escolaridad:nivel_escolaridad,
+                lengua_indigena:lengua_indigena,
+                calzado:calzado,
+                talla_camisa:talla_camisa,
+                talla_pantalon:talla_pantalon,
+                cuenta_bancaria:cuenta_bancaria,
+                estatus: "Pendiente"
+            }
+
+            // Subir los datos a la tabla "aspirantes" en la base de datos
+            try {
+                registrarAspirante(datoUsuario,datosAspirante)
+            } catch (err) {
+                console.error('Error inesperado:', err);
+                alert('Error inesperado al enviar los datos. Por favor, intenta más tarde.');
+            }
+        }
+    </script> 
     <!-- Barra de navegación -->
     <nav class="navbar">
         <h1>Login</h1>
@@ -109,7 +202,7 @@
         <h1>Bienvenido a CON-FE</h1>
         <form id="loginForm">
             <label for="email">Correo electrónico:</label>
-            <input type="email" id="email" placeholder="Correo electrónico" required>
+            <input type="text" id="email" placeholder="Correo electrónico" required>
             <label for="password">Contraseña:</label>
             <input type="password" id="password" placeholder="Contraseña" required>
             <button type="submit">Iniciar Sesión</button>
@@ -127,17 +220,36 @@
                 const email = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value.trim();
 
-                // Validar los usuarios y redirigir según el correo y la contraseña
-                if (email === 'bot@delegadoestatal.com' && password === '123456') {
-                    window.location.href = 'crear_convocatoria.html'; // Redirigir a la pantalla de Delegado Estatal
-                } else if (email === 'bot@admin.com' && password === '123456') {
-                    window.location.href = 'admin.html'; // Redirigir a la pantalla de Administrador
-                } else if (email === 'bot@coordinador.com' && password === '123456') {
-                    window.location.href = 'coordinador.html'; // Redirigir a la pantalla de Coordinador
-                } else {
-                    // Mostrar mensaje de error si no coincide ningún usuario
+                
+            login(email, password)
+                .then(result => {
+                    if (result.success) {
+                        console.log('Login exitoso:', result.tipo_usuario);
+                        errorMessage.style.display = 'none';
+                         // Guardar la sesión del usuario
+                        localStorage.setItem('tipo_usuario', result.tipo_usuario);
+                        localStorage.setItem('usuario', email);
+
+                        if(result.tipo_usuario == "Delegado"){
+                            window.location.href = 'dashboard.html';
+                        window.location.href = 'DELEGADO/crear_convocatoria.html';
+                        }
+                        else if(result.tipo_usuario == "JIAL"){
+                            window.location.href = 'JIAL/jial.html';
+                        }
+                        else if(result.tipo_usuario == "Coordinador"){
+                            window.location.href = 'COORDINADOR/coordinador.html';
+                        }
+
+                    } else {
+                        console.log('Login fallido:', result.message);
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en el login:', error);
                     errorMessage.style.display = 'block';
-                }
+                });
             });
         });
     </script>
