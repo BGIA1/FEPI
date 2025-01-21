@@ -38,6 +38,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
 }
 
@@ -53,7 +54,9 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation("androidx.appcompat:appcompat:1.6.1") // Soporte para AppCompatActivity
     implementation("androidx.constraintlayout:constraintlayout:2.1.4") // Soporte para ConstraintLayout
-    implementation("com.google.android.material:material:1.9.0") // Material Design (opcional para estilos)
+    implementation("com.google.android.material:material:1.9.0")
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx) // Material Design (opcional para estilos)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -67,4 +70,8 @@ dependencies {
     implementation(platform("io.github.jan-tennert.supabase:bom:3.0.3"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
     implementation("io.ktor:ktor-client-android:3.0.3")
+
+    implementation("org.nanohttpd:nanohttpd:2.3.1")
+
+
 }
