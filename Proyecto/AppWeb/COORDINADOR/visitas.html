@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <title>Visitas - CONAFE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #42A5F5, #90CAF9);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1E88E5;
+            padding: 10px 20px;
+            color: white;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar a:hover {
+            background-color: #1565C0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            text-align: center;
+            color: #1E88E5;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        select, input[type="date"], button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #1E88E5;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1565C0;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #1E88E5;
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: #FFC107;
+        }
+
+        .btn-edit:hover {
+            background-color: #FFB300;
+        }
+
+        .btn-delete {
+            background-color: #F44336;
+        }
+
+        .btn-delete:hover {
+            background-color: #D32F2F;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar">
+        <h1>Gestión de Visitas</h1>
+        <a href="coordinador.html">Regresar</a>
+    </nav>
+
+    <div class="container">
+        <h2>Generar Visita</h2>
+        <div class="form-group">
+            <label for="supervisor">Seleccione Supervisor:</label>
+            <select id="supervisor">
+                <option value="" disabled selected>Seleccione un Supervisor</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="fecha">Seleccione Fecha de Visita:</label>
+            <input type="date" id="fecha">
+        </div>
+
+        <button id="guardar">Guardar</button>
+
+        <h2>Visitas Guardadas</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Supervisor</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="visitasTableBody">
+                <!-- Filas dinámicas -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const visitasTableBody = document.getElementById('visitasTableBody');
+            const guardarButton = document.getElementById('guardar');
+            const delegadoSelect = document.getElementById('supervisor');
+            const fechaInput = document.getElementById('fecha');
+            const supabaseUrl = 'https://cqvlrkpsafdazotfprgz.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxdmxya3BzYWZkYXpvdGZwcmd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYzMDUwODUsImV4cCI6MjA1MTg4MTA4NX0.s0HUZhvxsPZxWvv2aAsz5RF_yPmUPdauSbEktDGGE6Y';
+            const supaClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+
+            let visitas = JSON.parse(localStorage.getItem('visitas')) || [];
+            let selectedId = null;
+
+            async function registrarVisita(id_supervisor, fecha) {
+            // Verificar si ya existe una visita con el mismo id_supervisor y fecha
+            const { data: existingVisitas, error: selectError } = await supaClient
+                .from('Visitas_Supervisor')
+                .select()
+                .eq('id_supervisor', id_supervisor)
+                .eq('fecha_visita', fecha);
+
+            if (selectError) {
+                alert('No se pudo verificar la visita existente');
+                console.error('Error al verificar la visita existente', selectError);
+                return { success: false, message: 'No se pudo verificar la visita existente', error: selectError };
+            }
+
+            if (existingVisitas.length > 0) {
+                // Ya existe una visita con el mismo id_supervisor y fecha
+                alert('Ya existe una visita registrada con el mismo supervisor y fecha');
+                return { success: false, message: 'Ya existe una visita registrada con el mismo supervisor y fecha' };
+            }
+
+            // Registrar la nueva visita
+                const { data, error } = await supaClient
+                    .from('Visitas_Supervisor')
+                    .insert([{ id_supervisor: id_supervisor, fecha_visita:fecha }])
+                    .select()
+                if (error) {
+                    alert('No se pudo registrar la visita');
+                    console.error('Error al registrar la visita', error);
+                    return { success: false, message: 'No se pudo agendar la visita', error };
+                } else{
+                    alert('Visita registrada exitosamente');
+                    console.log('Visita registrada exitosamente:', data);
+                    return { success: true, message: 'Visita agendada exitosamente', data };
+                    }
+            }
+
+            async function consultarSupervisores() {
+                const { data: supervisores, error } = await supaClient
+                    .from('Usuarios')
+                    .select(`
+                    id_usuario,
+                    nombre                    
+                    `)
+                    .eq('tipo_usuario', 'Supervisor');
+
+                if (error) {
+                    alert('No se pudieron consultar los supervisores');
+                    console.error('Error al consultar supervisores', error);
+                } else{
+                    console.log('Supervisores consultados con éxito:', supervisores   );
+                    const delegadoSelect = document.getElementById('supervisor');
+                    supervisores.forEach(supervisor => {
+                    const option = document.createElement('option');
+                    option.value = supervisor.id_usuario;
+                    option.textContent = supervisor.nombre + ' (' + supervisor.id_usuario + ')';
+                    delegadoSelect.appendChild(option);
+                });
+                }
+            }
+  
+            async function eliminarVisita(id,fecha) {
+                console.log(id,fecha)
+                const { data, error } = await supaClient
+                .from('Visitas_Supervisor')
+                .delete()
+                .eq('id_supervisor', id)
+                .eq('fecha_visita', fecha)
+                .select()
+                if (error) {
+                    alert('No se pudo eliminar la visita');
+                    console.error('No se pudo eliminar la visita', error);
+                    return { success: false, message: 'No se pudo eliminar la visita', error };
+                } else{
+                    alert('Visita eliminada exitosamente');
+                    console.log('Visita eliminada exitosamente', data);
+                    return { success: true, message: 'Visita eliminada exitosamente', data };
+                }             
+            }
+
+            consultarSupervisores()
+
+            const renderVisitas = () => {
+                visitasTableBody.innerHTML = visitas.map((visita, index) => `
+                    <tr data-id="${index}">
+                        <td>${visitas[index].delegadoID}</td>
+                        <td>${visita.fecha}</td>
+                        <td>
+                            <!--<button class="btn-edit" onclick="editarVisita(${index})">Editar</button>-->
+                            <button class="btn-delete" onclick="eliminarVisita(${index})">Eliminar</button>
+                        </td>
+                    </tr>
+                `).join('');
+            };
+
+            guardarButton.addEventListener('click', () => {
+
+                const delegadoID = delegadoSelect.value;
+                const delegadoNombre = delegadoSelect.options[delegadoSelect.selectedIndex].textContent;
+                const fecha = fechaInput.value;
+                
+                console.log(delegadoID, delegadoNombre, fecha);
+                if (!delegadoID || !fecha) {
+                    alert('Por favor, complete todos los campos.');
+                    return;
+                }
+ 
+                // Comparar la fecha seleccionada con la fecha actual
+                if (new Date(fecha) <= new Date()) {
+                    alert('La fecha seleccionada debe ser posterior a la fecha actual.');
+                    return;
+                }
+
+                registrarVisita(delegadoID,fecha)
+                    .then(result => {
+                        if (result.success) {
+                            console.log(result.message);
+                            if (selectedId !== null)
+                                {
+                                visitas[selectedId] = {delegadoID,  fecha };
+                                console.log(visitas[selectedId]);
+                                selectedId = null;
+                                }
+                                else {
+                                    visitas.push({ delegadoID, fecha });
+                                }
+
+                                localStorage.setItem('visitas', JSON.stringify(visitas));
+                                renderVisitas();
+                                delegadoSelect.value = '';
+                                fechaInput.value = '';
+                        } else {
+                            console.error(result.message, result.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al registrar la visita:', error);
+                    });
+            });
+
+            window.editarVisita = (index) => {
+                selectedId = index;
+                const visita = visitas[index];
+                delegadoSelect.value = visita.delegado;
+                fechaInput.value = visita.fecha;
+            };
+
+            window.eliminarVisita = (index) => {
+                if (confirm('¿Está seguro de que desea eliminar esta visita?')) {
+                    eliminarVisita(visitas[index].delegadoID,visitas[index].fecha)
+                    .then(result => {
+                            if (result.success) {
+                                console.log(result.message);
+                                visitas.splice(index, 1);
+                                localStorage.setItem('visitas', JSON.stringify(visitas));
+                                renderVisitas();
+                            } else {
+                                console.error(result.message, result.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error al eliminar la visita:', error);
+                        });
+                }
+            };
+
+            renderVisitas();
+        });
+    </script>
+</body>
+</html>

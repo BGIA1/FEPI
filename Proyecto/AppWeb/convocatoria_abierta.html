@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <title>Convocatoria Abierta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #1E88E5, #90CAF9);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .message-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .message-container h1 {
+            font-size: 2rem;
+            color: #1E88E5;
+            margin-bottom: 20px;
+        }
+
+        .message-container p {
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .message-container button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            background-color: #1E88E5;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .message-container button:hover {
+            background-color: #1565C0;
+        }
+    </style>
+</head>
+<body>
+    <div class="message-container">
+        <h1>Bienvenido Aspirante</h1>
+        <p>
+            La convocatoria <strong id="convocatoria"></strong> ha sido abierta. 
+            ¡Prepárate para participar! 
+            <br>
+            Inicio: <span id="fecha-inicio"></span> 
+            <br>
+            Fin: <span id="fecha-fin"></span>
+        </p>
+        <button onclick="redirigirFormulario()">Ir al Formulario</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const supabaseUrl = 'https://cqvlrkpsafdazotfprgz.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxdmxya3BzYWZkYXpvdGZwcmd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYzMDUwODUsImV4cCI6MjA1MTg4MTA4NX0.s0HUZhvxsPZxWvv2aAsz5RF_yPmUPdauSbEktDGGE6Y';
+        const supaClient = supabase.createClient(supabaseUrl, supabaseKey);
+// Variables para el año, la fecha de inicio y la fecha de fin
+        //const year = new Date().getFullYear();
+        const year = 2020;
+        const fechaInicio = "1 de marzo de " + year;
+        const fechaFin = "31 de julio de " + year;
+        async function consultarConvocatorias() {
+            const { data: convocatorias, error } = await supaClient
+                .from('Convocatorias')
+                .select(`
+                nombre,
+                fecha_inicio,
+                fecha_fin
+                `)
+            if (error) {
+                console.error('Error al consultar convocatorias', error);
+                return { success: false, message: 'Error al consultar convocatorias', error };
+            } else
+            {
+                return { success: true, convocatorias };
+            }
+        }
+
+        // Inserta valores dinámicos en los elementos correspondientes
+
+        consultarConvocatorias()
+        .then(({ success, convocatorias }) => {
+            if (success) {
+                console.log('Convocatorias consultadas con éxito:', convocatorias[0]);
+                document.getElementById('convocatoria').textContent =convocatorias[0].nombre;
+                document.getElementById('fecha-inicio').textContent = convocatorias[0].fecha_inicio;
+                document.getElementById('fecha-fin').textContent = convocatorias[0].fecha_fin;
+            } else {
+                alert('Error al consultar convocatorias');
+            }
+        })
+    })
+
+
+        // Función para redirigir al formulario
+        function redirigirFormulario() {
+            window.location.href = 'ASPIRANTE/formularioAspirante.html'; // Redirige a la página de formulario
+        }
+    </script>
+</body>
+</html>

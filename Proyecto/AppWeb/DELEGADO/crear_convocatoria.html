@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <title>Crear Convocatoria</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #1E88E5, #90CAF9);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Barra de navegación */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1E88E5;
+            padding: 10px 20px;
+            color: white;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            margin-left: 10px;
+        }
+
+        .navbar a:hover {
+            color: #BBDEFB;
+        }
+
+        /* Contenedores */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .convocatoria-container, .list-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .convocatoria-container h1, .list-container h2 {
+            font-size: 1.8rem;
+            color: #1E88E5;
+            margin-bottom: 20px;
+        }
+
+        .convocatoria-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .convocatoria-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .convocatoria-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #1E88E5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .convocatoria-container button:hover {
+            background-color: #1565C0;
+        }
+
+        .list-container ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .list-container li {
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #1E88E5;
+            color: #333;
+        }
+
+        .list-container li span {
+            display: block;
+            font-size: 0.9rem;
+            color: #555;
+        }
+    </style>
+    </head>
+    <body>
+    <!-- Barra de navegación -->
+    <nav class="navbar">
+        <h1>Crear Convocatoria</h1>
+        <a href="../index.html" id="logout">Cerrar Sesión</a>
+    </nav>
+
+    <!-- Contenido -->
+    <div class="container">
+        <div class="convocatoria-container">
+            <h1>Crear Convocatoria</h1>
+            <form id="convocatoriaForm">
+                <label for="name">Nombre de la convocatoria:</label>
+                <input type="text" id="name" placeholder="Nombre de la convocatoria" required>
+                <label for="startDate">Fecha de inicio:</label>
+                <input type="date" id="startDate" required>
+                <label for="endDate">Fecha de fin:</label>
+                <input type="date" id="endDate" required>
+                <button type="submit">Guardar Convocatoria</button>
+            </form>
+            <button id="deleteAll">Eliminar Todas las Convocatorias</button>
+        </div>
+
+        <div class="list-container">
+            <h2>Convocatorias Guardadas</h2>
+            <ul id="convocatoriasList">
+                <!-- Lista dinámica -->
+            </ul>
+        </div>
+    </div>
+    <script>
+        const supabaseUrl = 'https://cqvlrkpsafdazotfprgz.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxdmxya3BzYWZkYXpvdGZwcmd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYzMDUwODUsImV4cCI6MjA1MTg4MTA4NX0.s0HUZhvxsPZxWvv2aAsz5RF_yPmUPdauSbEktDGGE6Y';
+        const supaClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        document.getElementById('logout').addEventListener('click', () => {
+            // Eliminar los datos de sesión de localStorage
+            localStorage.removeItem('tipo_usuario');
+            localStorage.removeItem('usuario');
+            // Redirigir al usuario a la página de inicio de sesión
+            window.location.href = 'index.html';
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const convocatoriaForm = document.getElementById('convocatoriaForm');
+            const convocatoriasList = document.getElementById('convocatoriasList');
+            const deleteAllButton = document.getElementById('deleteAll');
+
+            async function registrarConvocatoria(nombreConvocatoria, fechaInicio, fechaFin) {
+            const { data, error } = await supaClient
+                .from('Convocatorias')
+                .insert({nombre:nombreConvocatoria, fecha_inicio:fechaInicio, fecha_fin:fechaFin})
+                .select()
+            if (error) {
+                console.error('Error al registrar convocatoria', error);
+                return { success: false, message: 'Error al registrar convocatoria'};
+            } else
+            {
+                return { success: true, message: 'Convocatoria registrada exitosamente' };
+            }
+            }
+
+            async function consultarConvocatorias() {
+            const { data: convocatorias, error } = await supaClient
+                .from('Convocatorias')
+                .select(`
+                nombre,
+                fecha_inicio,
+                fecha_fin
+                `)
+            if (error) {
+                console.error('Error al consultar convocatorias', error);
+                return { success: false, message: 'Error al consultar convocatorias', error };
+            } else
+            {
+                return { success: true, convocatorias };
+            }
+        }
+
+            async function borrarConvocatorias() {
+                const { data: convocatorias, error } = await supaClient
+                    .from('Convocatorias')
+                    .delete()
+                    .gt('id', 0)
+                if (error) {
+                    console.error('Error al borrar convocatorias', error);
+                    return { success: false, message: 'Error al borrar convocatorias'};
+                } else
+                {
+                    return { success: true, message: 'Convocatorias borradas exitosamente' };
+                }
+            }
+
+            consultarConvocatorias()
+            .then((result) => {
+                if(result.success){
+                    convocatoriasList.innerHTML = result.convocatorias.map(convocatoria => `
+                    <li>
+                        <strong>${convocatoria.nombre}</strong>
+                        <span>Inicio: ${convocatoria.fecha_inicio}</span>
+                        <span>Fin: ${convocatoria.fecha_fin}</span>
+                    </li>
+                `).join('');
+                }
+            });
+
+            // Guardar convocatoria
+            convocatoriaForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('name').value;
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+
+                if (new Date(startDate) > new Date(endDate)) {
+                    alert('La fecha de inicio no puede ser mayor que la fecha de fin.');
+                    return;
+                }
+
+                registrarConvocatoria(name, startDate, endDate)
+                .then((response) => {
+                    alert(response.message);
+                    location.reload(); // Recargar la página después de asignar el capacitador
+                });
+                
+            });
+
+            // Eliminar todas las convocatorias
+            deleteAllButton.addEventListener('click', () => {
+                if (confirm('¿Estás seguro de que deseas eliminar todas las convocatorias?')) {
+                    borrarConvocatorias()
+                    .then((response) => {
+                        alert(response.message);
+                        location.reload(); // Recargar la página después de eliminar todas las convocatorias
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
